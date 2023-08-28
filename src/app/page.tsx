@@ -116,9 +116,8 @@ export default function Home() {
           <div className="grid grid-cols-4 gap-x-4 gap-y-8 p-4">
             {traits.map((trait, idx) => {
               return (
-                <div>
+                <div key={`trait-${idx}`}>
                   <TraitCard
-                    key={`trait-${idx}`}
                     trait={trait}
                     onClick={() => {
                       setIsModalOpen(true);
