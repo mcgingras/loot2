@@ -41,7 +41,7 @@ const TraitRightSlider = ({
         </div>
         {action && (
           <button
-            className="w-full border-t border-white/30 text-white uppercase fixed bottom-0 py-4"
+            className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
             onClick={() => action.callback()}
           >
             {action.label}

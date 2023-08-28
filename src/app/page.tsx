@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { Grenze_Gotisch } from "next/font/google";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
 import TraitCard from "@/components/TraitCard";
 import TraitRightSlider from "@/components/TraitRightSlider";
+import { CharacterABI } from "@/abi/character";
 
 const TraitItem = ({ trait }: { trait: { type: string; name: string } }) => {
   return (
@@ -18,6 +20,7 @@ const TraitItem = ({ trait }: { trait: { type: string; name: string } }) => {
     </li>
   );
 };
+
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedTrait, setSelectedTrait] = useState<{
@@ -58,6 +61,21 @@ export default function Home() {
       equipped: false,
     },
   ];
+
+  const { config } = usePrepareContractWrite({
+    address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
+    abi: CharacterABI,
+    functionName: "mint",
+    args: [BigInt(1)],
+  });
+
+  const {
+    data: mintData,
+    isLoading: isMintLoading,
+    isSuccess: isMintSuccessful,
+    write: mint,
+  } = useContractWrite(config);
+
   return (
     <>
       {selectedTrait && (
@@ -100,7 +118,10 @@ export default function Home() {
                 </div>
               );
             })}
-            <div className="border border-white/20 w-full aspect-square flex items-center justify-center text-white text-xs cursor-pointer">
+            <div
+              className="border border-white/20 w-full aspect-square flex items-center justify-center text-white text-xs cursor-pointer"
+              onClick={() => mint?.()}
+            >
               + Mint a new character
             </div>
           </div>
@@ -109,7 +130,7 @@ export default function Home() {
           <div className="p-4 border-b border-white/20 w-full">
             <h2 className="text-white uppercase">Traits</h2>
             <p className="text-white/50 text-sm uppercase">
-              All of the individual traits held by your token.
+              All of the individual traits held by your character.
             </p>
           </div>
           {/* maybe inactive traits are grayed out (in the backpack but not active) */}
