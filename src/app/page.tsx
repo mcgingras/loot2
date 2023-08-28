@@ -84,11 +84,8 @@ export default function Home() {
           <div className="p-4 overflow-y-scroll grow">
             {characters.map((char, idx) => {
               return (
-                <div className="mb-8">
-                  <div
-                    className="border border-white/20 w-full aspect-square block"
-                    key={`char-${idx}`}
-                  >
+                <div className="mb-8" key={`char-${idx}`}>
+                  <div className="border border-white/20 w-full aspect-square block">
                     <ul className="text-white text-xs uppercase">
                       {traits
                         .filter((trait) => trait.equipped)
