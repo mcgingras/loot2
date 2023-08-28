@@ -89,7 +89,7 @@ export default function Home() {
           }}
         />
       )}
-      <section className="grid grid-cols-3 overflow-y-scroll z-0 h-full">
+      <section className="grid grid-cols-1 sm:grid-cols-3 overflow-y-scroll z-0 h-full">
         <div className="col-span-1 border-r border-white/20 h-full flex flex-col overflow-y-scroll">
           <div className="p-4 border-b border-white/20 w-full">
             <h1 className={`${grenze.className} text-white font-bold text-8xl`}>
@@ -126,7 +126,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="col-span-2 overflow-y-scroll z-0">
+        <div className="col-span-1 sm:col-span-2 overflow-y-scroll z-0">
           <div className="p-4 border-b border-white/20 w-full">
             <h2 className="text-white uppercase">Traits</h2>
             <p className="text-white/50 text-sm uppercase">
@@ -134,7 +134,7 @@ export default function Home() {
             </p>
           </div>
           {/* maybe inactive traits are grayed out (in the backpack but not active) */}
-          <div className="grid grid-cols-4 gap-x-4 gap-y-8 p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 p-4">
             {traits.map((trait, idx) => {
               return (
                 <div key={`trait-${idx}`}>

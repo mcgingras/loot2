@@ -36,7 +36,7 @@ export default function Store() {
             Purchase new loot to add to your character.
           </p>
         </div>
-        <div className="grid grid-cols-6 gap-x-4 gap-y-8 p-4 overflow-y-scroll grow">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-x-4 gap-y-8 p-4 overflow-y-scroll grow">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(
             (trait, idx) => {
               return (
