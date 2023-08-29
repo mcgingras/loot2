@@ -7,8 +7,9 @@ import Profile from "../components/Profile";
 const inter = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400"] });
 
 export const metadata: Metadata = {
-  title: "Station Loot",
-  description: "Token bound loot.",
+  title: "Loot2",
+  description:
+    "Token bound upgrade to the original loot project. By Station Labs.",
 };
 
 export default function RootLayout({

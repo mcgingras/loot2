@@ -100,6 +100,30 @@ export const TraitABI = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "str1",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "str2",
+        type: "string",
+      },
+    ],
+    name: "areStringsEqual",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "owner",
         type: "address",
@@ -155,8 +179,13 @@ export const TraitABI = [
         name: "tokenId",
         type: "uint256",
       },
+      {
+        internalType: "string",
+        name: "traitType",
+        type: "string",
+      },
     ],
-    name: "getItem",
+    name: "getItemByType",
     outputs: [
       {
         internalType: "string",
@@ -223,9 +252,9 @@ export const TraitABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
+        internalType: "address",
+        name: "to",
+        type: "address",
       },
       {
         internalType: "string",
@@ -240,16 +269,6 @@ export const TraitABI = [
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
       {
         internalType: "string",
         name: "traitType",

@@ -8,15 +8,16 @@ import {
   useContractRead,
 } from "wagmi";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
-import Link from "next/link";
+import CharacterCard from "@/components/CharacterCard";
+import { CharacterABI } from "@/abi/character";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
-import CharacterCard from "@/components/CharacterCard";
-import CharacterTraitGrid from "@/components/CharacterTraitGrid";
-import { CharacterABI } from "@/abi/character";
-
-export default function Home() {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { address } = useAccount();
 
   const { data: characterTokens, error } = useContractRead({
@@ -57,9 +58,7 @@ export default function Home() {
           {characterTokens?.map((tokenId, idx) => {
             return (
               <div className="mb-8" key={`char-${idx}`}>
-                <Link href={`/character/${tokenId}`} className="cursor-pointer">
-                  <CharacterCard tokenId={tokenId} />
-                </Link>
+                <CharacterCard tokenId={tokenId} />
                 <span className="text-xs text-white ml-1">
                   Character #{tokenId.toString().padStart(4, "0")}
                 </span>
@@ -75,13 +74,7 @@ export default function Home() {
         </div>
       </div>
       <div className="col-span-1 sm:col-span-2 overflow-y-scroll z-0">
-        <div className="p-4 border-b border-white/20 w-full">
-          <h2 className="text-white uppercase">Traits</h2>
-          <p className="text-white/50 text-sm uppercase">
-            All of the individual traits held by your character.
-          </p>
-        </div>
-        <CharacterTraitGrid tokenId={BigInt(0)} />
+        {children}
       </div>
     </section>
   );
