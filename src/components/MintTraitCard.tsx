@@ -28,7 +28,7 @@ const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
     abi: TraitABI,
     enabled: !!tbaAddress,
     functionName: "mint",
-    args: [tbaAddress as `0x${string}`, "WEAPON"],
+    args: [tbaAddress as `0x${string}`, "HEAD_ARMOR"],
   });
 
   const {

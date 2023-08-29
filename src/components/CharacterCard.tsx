@@ -9,7 +9,11 @@ const CharacterCard = ({
   tokenId: bigint;
   onClick?: () => void;
 }) => {
-  const { data: tokenURI, error } = useContractRead({
+  const {
+    data: tokenURI,
+    error,
+    refetch,
+  } = useContractRead({
     chainId: 5,
     address: CHARACTER_CONTRACT_ADDRESS,
     abi: CharacterABI,
@@ -17,12 +21,21 @@ const CharacterCard = ({
     args: [tokenId],
   });
 
-  const metadata = JSON.parse(atob(tokenURI?.split(",")[1] || ""));
+  // TODO:
+  // return empty state from contract with same format as regular non empty state so we don't have to do this jank parse
+
+  console.log(tokenURI);
+
+  const metadata =
+    tokenURI && !tokenURI.includes("svg")
+      ? JSON.parse(atob(tokenURI?.split(",")[1] || ""))
+      : {
+          image: tokenURI,
+        };
 
   return (
     <img
       className="border border-white/20"
-      // src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaW5ZTWluIG1lZXQiIHZpZXdCb3g9IjAgMCAzNTAgMzUwIj48c3R5bGU+LmJhc2UgeyBmb250LWZhbWlseTogIklCTSBQbGV4IE1vbm8iLCBtb25vc3BhY2U7IGZvbnQtc2l6ZTogMTJweDsgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTsgZmlsbDogI0ZGRiB9PC9zdHlsZT48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJibGFjayIgLz48dGV4dCB4PSIxMCIgeT0iMjAiIGNsYXNzPSJiYXNlIGxlZnQiPkVtcHR5PC90ZXh0Pjwvc3ZnPg=="
       src={metadata.image}
       alt="Token details."
       onClick={onClick}

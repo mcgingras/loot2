@@ -13,7 +13,6 @@ import Link from "next/link";
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
 import CharacterCard from "@/components/CharacterCard";
-import CharacterTraitGrid from "@/components/CharacterTraitGrid";
 import { CharacterABI } from "@/abi/character";
 
 export default function Home() {
@@ -76,12 +75,11 @@ export default function Home() {
       </div>
       <div className="col-span-1 sm:col-span-2 overflow-y-scroll z-0">
         <div className="p-4 border-b border-white/20 w-full">
-          <h2 className="text-white uppercase">Traits</h2>
-          <p className="text-white/50 text-sm uppercase">
-            All of the individual traits held by your character.
+          <h2 className="text-white uppercase">No Character Selected</h2>
+          <p className="text-white/50 text-sm uppercase mt-1">
+            Select a character from your inventory.
           </p>
         </div>
-        <CharacterTraitGrid tokenId={BigInt(0)} />
       </div>
     </section>
   );

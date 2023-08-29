@@ -8,6 +8,7 @@ export default function Profile() {
   const { connect } = useConnect({
     connector: new InjectedConnector(),
   });
+
   const { disconnect } = useDisconnect();
 
   if (isConnected)

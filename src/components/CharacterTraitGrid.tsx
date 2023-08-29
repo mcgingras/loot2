@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useContractRead } from "wagmi";
+import {
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+} from "wagmi";
 import {
   CHARACTER_CONTRACT_ADDRESS,
   TRAIT_CONTRACT_ADDRESS,
@@ -18,6 +22,7 @@ import MintTraitCard from "@/components/MintTraitCard";
 const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedTrait, setSelectedTrait] = useState<{
+    id: bigint;
     type: string;
     name: string;
     equipped: boolean;
@@ -40,6 +45,22 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [tbaAddress as `0x${string}`],
   });
 
+  const { config } = usePrepareContractWrite({
+    chainId: 5,
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "equip",
+    enabled: !!selectedTrait,
+    args: [selectedTrait?.id || BigInt(0)],
+  });
+
+  const {
+    data: equipData,
+    isLoading: isEquipLoading,
+    isSuccess: isEquipSuccessful,
+    write: equip,
+  } = useContractWrite(config);
+
   return (
     <>
       {selectedTrait && (
@@ -49,13 +70,24 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
           selectedTrait={selectedTrait}
           action={{
             label: selectedTrait.equipped ? "Unequip" : "Equip",
-            callback: () => {},
+            callback: () => {
+              equip?.();
+            },
           }}
         />
       )}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 p-4">
         {traitTokenIds?.map((traitId, idx) => {
-          return <TraitCardWrapper traitId={traitId} key={`trait=${idx}`} />;
+          return (
+            <TraitCardWrapper
+              traitId={traitId}
+              key={`trait=${idx}`}
+              onClick={(trait) => {
+                setIsModalOpen(true);
+                setSelectedTrait(trait);
+              }}
+            />
+          );
         })}
         <MintTraitCard tokenId={tokenId} />
       </div>
