@@ -7,11 +7,16 @@ import {
   usePrepareContractWrite,
   useContractRead,
 } from "wagmi";
+import Link from "next/link";
+import toast, { Toaster } from "react-hot-toast";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
 import CharacterCard from "@/components/CharacterCard";
 import { CharacterABI } from "@/abi/character";
 
-const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
+const grenze = Grenze_Gotisch({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
 
 export default function RootLayout({
   children,
@@ -58,7 +63,9 @@ export default function RootLayout({
           {characterTokens?.map((tokenId, idx) => {
             return (
               <div className="mb-8" key={`char-${idx}`}>
-                <CharacterCard tokenId={tokenId} />
+                <Link href={`/character/${tokenId}`} className="cursor-pointer">
+                  <CharacterCard tokenId={tokenId} />
+                </Link>
                 <span className="text-xs text-white ml-1">
                   Character #{tokenId.toString().padStart(4, "0")}
                 </span>
@@ -75,6 +82,10 @@ export default function RootLayout({
       </div>
       <div className="col-span-1 sm:col-span-2 overflow-y-scroll z-0">
         {children}
+        <Toaster
+          position="bottom-right"
+          containerClassName="text-xs uppercase font-bold"
+        />
       </div>
     </section>
   );
