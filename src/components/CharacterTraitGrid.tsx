@@ -28,6 +28,8 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     equipped: boolean;
   }>();
 
+  const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
+
   const { data: tbaAddress, error: tbaAddressError } = useContractRead({
     chainId: 5,
     address: REGISTRY_CONTRACT_ADDRESS,
@@ -36,7 +38,11 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
   });
 
-  const { data: traitTokenIds, error } = useContractRead({
+  const {
+    data: traitTokenIds,
+    error,
+    refetch: refetchTraits,
+  } = useContractRead({
     chainId: 5,
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
@@ -60,6 +66,15 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     isSuccess: isEquipSuccessful,
     write: equip,
   } = useContractWrite(config);
+
+  const onPending = () => {
+    setIsNewTraitPending(true);
+  };
+
+  const onSuccess = () => {
+    setIsNewTraitPending(false);
+    refetchTraits();
+  };
 
   return (
     <>
@@ -89,7 +104,20 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
             />
           );
         })}
-        <MintTraitCard tokenId={tokenId} />
+
+        {isNewTraitPending && (
+          <div className="border border-white/20 p-4 aspect-square hover:border-white/50 transition-all cursor-pointer">
+            <div className="w-full h-full flex-row text-xs text-white flex items-center justify-center">
+              <span>+ Minting new trait...</span>
+            </div>
+          </div>
+        )}
+
+        <MintTraitCard
+          tokenId={tokenId}
+          onPending={onPending}
+          onSuccess={onSuccess}
+        />
       </div>
     </>
   );

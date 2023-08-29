@@ -8,7 +8,7 @@ import {
   useContractRead,
 } from "wagmi";
 import Link from "next/link";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
 import CharacterCard from "@/components/CharacterCard";
 import { CharacterABI } from "@/abi/character";

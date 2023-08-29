@@ -1,8 +1,12 @@
+import { useEffect } from "react";
 import {
   usePrepareContractWrite,
   useContractWrite,
   useContractRead,
+  useWaitForTransaction,
 } from "wagmi";
+import toast from "react-hot-toast";
+
 import {
   CHARACTER_CONTRACT_ADDRESS,
   TRAIT_CONTRACT_ADDRESS,
@@ -13,7 +17,15 @@ import { TraitABI } from "@/abi/trait";
 import { AccountRegistryABI } from "@/abi/accountRegistry";
 
 // eventually move tokenId to url param
-const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
+const MintTraitCard = ({
+  tokenId,
+  onPending,
+  onSuccess,
+}: {
+  tokenId: bigint;
+  onPending: () => void;
+  onSuccess: () => void;
+}) => {
   const { data: tbaAddress, error: tbaAddressError } = useContractRead({
     chainId: 5,
     address: REGISTRY_CONTRACT_ADDRESS,
@@ -37,6 +49,21 @@ const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
     isSuccess: isMintSuccessful,
     write: mint,
   } = useContractWrite(config);
+
+  useEffect(() => {
+    if (mintData?.hash) {
+      onPending();
+    }
+  }, [mintData]);
+
+  useWaitForTransaction({
+    chainId: 5,
+    hash: mintData?.hash,
+    onSuccess: () => {
+      toast.success("Trait minted");
+      onSuccess();
+    },
+  });
 
   return (
     <div
