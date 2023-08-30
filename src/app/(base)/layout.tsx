@@ -37,7 +37,7 @@ export default function RootLayout({
 
   useEffect(() => {
     callMethod("characterTokensOfOwner", address);
-  }, [address]);
+  }, [address, callMethod]);
 
   const [isPending, setIsPending] = useState<boolean>(false);
 

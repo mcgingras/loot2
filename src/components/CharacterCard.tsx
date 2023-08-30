@@ -14,7 +14,7 @@ const CharacterCard = ({
 
   useEffect(() => {
     callMethod("characterTokenURI", tokenId);
-  });
+  }, [tokenId, callMethod]);
 
   // TODO:
   // return empty state from contract with same format as regular non empty state so we don't have to do this jank parse

@@ -22,7 +22,7 @@ const TraitCardWrapper = ({
 
   useEffect(() => {
     callMethod("getTraitDetails", traitId);
-  }, [traitId]);
+  }, [traitId, callMethod]);
 
   return (
     <div>
