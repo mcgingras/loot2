@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useContractRead,
   useContractWrite,
@@ -22,7 +22,7 @@ import TraitRightSlider from "@/components/TraitRightSlider";
 import MintTraitCard from "@/components/MintTraitCard";
 
 const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isSliderOpen, setIsSliderOpen] = useState<boolean>(false);
   const [selectedTrait, setSelectedTrait] = useState<{
     id: bigint;
     traitType: string;
@@ -33,7 +33,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
   const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
   const [isEquipPending, setIsEquipPending] = useState<boolean>(false);
 
-  const { data: tbaAddress, error: tbaAddressError } = useContractRead({
+  const { data: tbaAddress } = useContractRead({
     chainId: 5,
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
@@ -41,11 +41,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
   });
 
-  const {
-    data: traitTokenIds,
-    error,
-    refetch: refetchTraits,
-  } = useContractRead({
+  const { data: traitTokenIds, refetch: refetchTraits } = useContractRead({
     chainId: 5,
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
@@ -63,12 +59,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [selectedTrait?.id || BigInt(1)],
   });
 
-  const {
-    data: equipData,
-    isLoading: isEquipLoading,
-    isSuccess: isEquipSuccessful,
-    write: equip,
-  } = useContractWrite(equipConfig);
+  const { data: equipData, write: equip } = useContractWrite(equipConfig);
 
   const { config: unequipConfig } = usePrepareContractWrite({
     chainId: 5,
@@ -79,12 +70,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [selectedTrait?.id || BigInt(1)],
   });
 
-  const {
-    data: unequipData,
-    isLoading: isUnEquipLoading,
-    isSuccess: isUnEquipSuccessful,
-    write: unequip,
-  } = useContractWrite(unequipConfig);
+  const { data: unequipData, write: unequip } = useContractWrite(unequipConfig);
 
   const onPending = () => {
     setIsNewTraitPending(true);
@@ -95,13 +81,21 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     refetchTraits();
   };
 
+  useEffect(() => {
+    if (equipData?.hash || unequipData?.hash) {
+      setIsEquipPending(true);
+    }
+  }, [equipData, unequipData]);
+
   useWaitForTransaction({
     chainId: 5,
     hash: selectedTrait?.equipped ? unequipData?.hash : equipData?.hash,
     onSuccess: () => {
       toast.success("Trait equipped");
       setIsEquipPending(false);
-      refetchTraits();
+      setIsSliderOpen(false);
+      // refetchCharacter
+      // refetchTraitDetails (for selectedTrait)
     },
   });
 
@@ -109,15 +103,14 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     <>
       {selectedTrait && (
         <TraitRightSlider
-          isSliderOpen={isModalOpen}
-          setIsSliderOpen={setIsModalOpen}
+          isSliderOpen={isSliderOpen}
+          setIsSliderOpen={setIsSliderOpen}
           isEquipPending={isEquipPending}
           selectedTrait={selectedTrait}
           action={{
             label: selectedTrait.equipped ? "Unequip" : "Equip",
             callback: () => {
               selectedTrait.equipped ? unequip?.() : equip?.();
-              setIsEquipPending(true);
             },
           }}
         />
@@ -129,7 +122,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
               traitId={traitId}
               key={`trait=${idx}`}
               onClick={(trait) => {
-                setIsModalOpen(true);
+                setIsSliderOpen(true);
                 setSelectedTrait(trait);
               }}
             />

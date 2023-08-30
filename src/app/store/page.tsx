@@ -16,7 +16,7 @@ export default function Store() {
 
   return (
     <>
-      {selectedTrait && (
+      {/* {selectedTrait && (
         <TraitRightSlider
           isSliderOpen={isSlider}
           setIsSliderOpen={setIsSliderOpen}
@@ -65,7 +65,7 @@ export default function Store() {
             }
           )}
         </div>
-      </section>
+      </section> */}
     </>
   );
 }
