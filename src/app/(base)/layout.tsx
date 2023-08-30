@@ -7,7 +7,9 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
+  useConnect,
 } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
@@ -25,7 +27,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
   const { registry, callMethod } = useContractStore();
   const { data: characterTokens, pending: characterTokensPending } =
     registry.characterTokensOfOwner;
@@ -95,9 +100,13 @@ export default function RootLayout({
           ) : (
             <div
               className="border border-white/20 hover:border-white/50 transition-colors w-full aspect-square flex items-center justify-center text-white text-xs cursor-pointer"
-              onClick={() => mint?.()}
+              onClick={() => {
+                isConnected ? mint?.() : connect();
+              }}
             >
-              + Mint a new character
+              {isConnected
+                ? "+ Mint a new character"
+                : "Connect wallet to mint a character"}
             </div>
           )}
         </div>

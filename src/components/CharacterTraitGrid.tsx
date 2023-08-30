@@ -6,6 +6,7 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
+  useAccount,
 } from "wagmi";
 import {
   CHARACTER_CONTRACT_ADDRESS,
@@ -23,6 +24,7 @@ import MintTraitCard from "@/components/MintTraitCard";
 import { useContractStore } from "@/stores/contractStore";
 
 const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
+  const { isConnected } = useAccount();
   const registry = useContractStore().registry;
   const callMethod = useContractStore().callMethod;
 
@@ -140,12 +142,13 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
             </div>
           </div>
         )}
-
-        <MintTraitCard
-          tokenId={tokenId}
-          onPending={onPending}
-          onSuccess={onSuccess}
-        />
+        {isConnected && (
+          <MintTraitCard
+            tokenId={tokenId}
+            onPending={onPending}
+            onSuccess={onSuccess}
+          />
+        )}
       </div>
     </>
   );

@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import RightSlider from "@/components/RightSlider";
 import TraitCard from "@/components/TraitCard";
 import { Grenze_Gotisch } from "next/font/google";
+import { useAccount } from "wagmi";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
@@ -25,6 +26,7 @@ const TraitRightSlider = ({
     callback: () => void;
   };
 }) => {
+  const { isConnected } = useAccount();
   return (
     <RightSlider
       open={isSliderOpen}
@@ -41,7 +43,7 @@ const TraitRightSlider = ({
           </span>
           <TraitCard trait={selectedTrait!} />
         </div>
-        {action && (
+        {action && isConnected && (
           <button
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
             onClick={() => action.callback()}
