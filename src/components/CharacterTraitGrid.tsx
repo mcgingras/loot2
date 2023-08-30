@@ -5,12 +5,14 @@ import {
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
+  useWaitForTransaction,
 } from "wagmi";
 import {
   CHARACTER_CONTRACT_ADDRESS,
   TRAIT_CONTRACT_ADDRESS,
   REGISTRY_CONTRACT_ADDRESS,
 } from "@/utils/constants";
+import toast from "react-hot-toast";
 
 import { TraitABI } from "@/abi/trait";
 import { AccountRegistryABI } from "@/abi/accountRegistry";
@@ -29,6 +31,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
   }>();
 
   const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
+  const [isEquipPending, setIsEquipPending] = useState<boolean>(false);
 
   const { data: tbaAddress, error: tbaAddressError } = useContractRead({
     chainId: 5,
@@ -51,13 +54,13 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [tbaAddress as `0x${string}`],
   });
 
-  const { config } = usePrepareContractWrite({
+  const { config: equipConfig } = usePrepareContractWrite({
     chainId: 5,
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
     functionName: "equip",
     enabled: !!selectedTrait,
-    args: [selectedTrait?.id || BigInt(0)],
+    args: [selectedTrait?.id || BigInt(1)],
   });
 
   const {
@@ -65,7 +68,23 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     isLoading: isEquipLoading,
     isSuccess: isEquipSuccessful,
     write: equip,
-  } = useContractWrite(config);
+  } = useContractWrite(equipConfig);
+
+  const { config: unequipConfig } = usePrepareContractWrite({
+    chainId: 5,
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "unequip",
+    enabled: !!selectedTrait,
+    args: [selectedTrait?.id || BigInt(1)],
+  });
+
+  const {
+    data: unequipData,
+    isLoading: isUnEquipLoading,
+    isSuccess: isUnEquipSuccessful,
+    write: unequip,
+  } = useContractWrite(unequipConfig);
 
   const onPending = () => {
     setIsNewTraitPending(true);
@@ -76,17 +95,29 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     refetchTraits();
   };
 
+  useWaitForTransaction({
+    chainId: 5,
+    hash: selectedTrait?.equipped ? unequipData?.hash : equipData?.hash,
+    onSuccess: () => {
+      toast.success("Trait equipped");
+      setIsEquipPending(false);
+      refetchTraits();
+    },
+  });
+
   return (
     <>
       {selectedTrait && (
         <TraitRightSlider
           isSliderOpen={isModalOpen}
           setIsSliderOpen={setIsModalOpen}
+          isEquipPending={isEquipPending}
           selectedTrait={selectedTrait}
           action={{
             label: selectedTrait.equipped ? "Unequip" : "Equip",
             callback: () => {
-              equip?.();
+              selectedTrait.equipped ? unequip?.() : equip?.();
+              setIsEquipPending(true);
             },
           }}
         />
@@ -106,9 +137,9 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
         })}
 
         {isNewTraitPending && (
-          <div className="border border-white/20 p-4 aspect-square hover:border-white/50 transition-all cursor-pointer">
+          <div className="border border-white/20 p-4 aspect-square hover:border-white/50 transition-all cursor-pointer animate-pulse">
             <div className="w-full h-full flex-row text-xs text-white flex items-center justify-center">
-              <span>+ Minting new trait...</span>
+              <span>Minting new trait...</span>
             </div>
           </div>
         )}

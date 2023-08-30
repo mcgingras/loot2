@@ -8,11 +8,13 @@ const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 const TraitRightSlider = ({
   isSliderOpen,
   setIsSliderOpen,
+  isEquipPending,
   selectedTrait,
   action,
 }: {
   isSliderOpen: boolean;
   setIsSliderOpen: Dispatch<SetStateAction<boolean>>;
+  isEquipPending: boolean;
   selectedTrait: {
     traitType: string;
     name: string;
@@ -44,7 +46,7 @@ const TraitRightSlider = ({
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
             onClick={() => action.callback()}
           >
-            {action.label}
+            <span>{isEquipPending ? "Pending..." : action.label}</span>
           </button>
         )}
       </div>

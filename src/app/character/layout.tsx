@@ -1,14 +1,16 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Grenze_Gotisch } from "next/font/google";
 import {
   useAccount,
   useContractWrite,
   usePrepareContractWrite,
   useContractRead,
+  useWaitForTransaction,
 } from "wagmi";
 import Link from "next/link";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
 import CharacterCard from "@/components/CharacterCard";
 import { CharacterABI } from "@/abi/character";
@@ -23,9 +25,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [isPending, setIsPending] = useState<boolean>(false);
   const { address } = useAccount();
 
-  const { data: characterTokens, error } = useContractRead({
+  const {
+    data: characterTokens,
+    error,
+    refetch,
+  } = useContractRead({
     chainId: 5,
     address: CHARACTER_CONTRACT_ADDRESS,
     abi: CharacterABI,
@@ -47,6 +54,22 @@ export default function RootLayout({
     isSuccess: isMintSuccessful,
     write: mint,
   } = useContractWrite(config);
+
+  useEffect(() => {
+    if (mintData?.hash) {
+      setIsPending(true);
+    }
+  }, [mintData]);
+
+  useWaitForTransaction({
+    chainId: 5,
+    hash: mintData?.hash,
+    onSuccess: () => {
+      toast.success("Character minted");
+      setIsPending(false);
+      refetch();
+    },
+  });
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-3 overflow-y-scroll z-0 h-full">
@@ -72,12 +95,21 @@ export default function RootLayout({
               </div>
             );
           })}
-          <div
-            className="border border-white/20 w-full aspect-square flex items-center justify-center text-white text-xs cursor-pointer"
-            onClick={() => mint?.()}
-          >
-            + Mint a new character
-          </div>
+          {isPending ? (
+            <div
+              className="border border-white/20 transition-colors w-full aspect-square flex items-center justify-center text-white text-xs animate-pulse"
+              onClick={() => mint?.()}
+            >
+              Minting character...
+            </div>
+          ) : (
+            <div
+              className="border border-white/20 hover:border-white/50 transition-colors w-full aspect-square flex items-center justify-center text-white text-xs cursor-pointer"
+              onClick={() => mint?.()}
+            >
+              + Mint a new character
+            </div>
+          )}
         </div>
       </div>
       <div className="col-span-1 sm:col-span-2 overflow-y-scroll z-0">

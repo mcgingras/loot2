@@ -24,8 +24,6 @@ const CharacterCard = ({
   // TODO:
   // return empty state from contract with same format as regular non empty state so we don't have to do this jank parse
 
-  console.log(tokenURI);
-
   const metadata =
     tokenURI && !tokenURI.includes("svg")
       ? JSON.parse(atob(tokenURI?.split(",")[1] || ""))

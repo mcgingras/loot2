@@ -36,3 +36,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ### Todo
 
 - lift all transaction state up so it's easier to manage
+- unified layout? Other next 13 features?
