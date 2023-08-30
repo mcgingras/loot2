@@ -1,6 +1,5 @@
-import { useContractRead } from "wagmi";
-import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
-import { CharacterABI } from "@/abi/character";
+import { useEffect } from "react";
+import { useContractStore } from "@/stores/contractStore";
 
 const CharacterCard = ({
   tokenId,
@@ -9,16 +8,12 @@ const CharacterCard = ({
   tokenId: bigint;
   onClick?: () => void;
 }) => {
-  const {
-    data: tokenURI,
-    error,
-    refetch,
-  } = useContractRead({
-    chainId: 5,
-    address: CHARACTER_CONTRACT_ADDRESS,
-    abi: CharacterABI,
-    functionName: "tokenURI",
-    args: [tokenId],
+  const { registry, callMethod } = useContractStore();
+  const { data: tokenURI, pending: tokenURIPending } =
+    registry.characterTokenURI;
+
+  useEffect(() => {
+    callMethod("characterTokenURI", tokenId);
   });
 
   // TODO:

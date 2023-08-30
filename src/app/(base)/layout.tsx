@@ -6,7 +6,6 @@ import {
   useAccount,
   useContractWrite,
   usePrepareContractWrite,
-  useContractRead,
   useWaitForTransaction,
 } from "wagmi";
 import Link from "next/link";
@@ -14,6 +13,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
 import CharacterCard from "@/components/CharacterCard";
 import { CharacterABI } from "@/abi/character";
+import { useContractStore } from "@/stores/contractStore";
 
 const grenze = Grenze_Gotisch({
   subsets: ["latin"],
@@ -25,21 +25,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isPending, setIsPending] = useState<boolean>(false);
   const { address } = useAccount();
+  const { registry, callMethod } = useContractStore();
+  const { data: characterTokens, pending: characterTokensPending } =
+    registry.characterTokensOfOwner;
 
-  const {
-    data: characterTokens,
-    error,
-    refetch,
-  } = useContractRead({
-    chainId: 5,
-    address: CHARACTER_CONTRACT_ADDRESS,
-    abi: CharacterABI,
-    functionName: "tokensOfOwner",
-    enabled: !!address,
-    args: [address as `0x${string}`],
-  });
+  useEffect(() => {
+    callMethod("characterTokensOfOwner", address);
+  }, [address]);
+
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   const { config } = usePrepareContractWrite({
     chainId: 5,
@@ -48,12 +43,7 @@ export default function RootLayout({
     functionName: "mint",
   });
 
-  const {
-    data: mintData,
-    isLoading: isMintLoading,
-    isSuccess: isMintSuccessful,
-    write: mint,
-  } = useContractWrite(config);
+  const { data: mintData, write: mint } = useContractWrite(config);
 
   useEffect(() => {
     if (mintData?.hash) {
@@ -66,8 +56,8 @@ export default function RootLayout({
     hash: mintData?.hash,
     onSuccess: () => {
       toast.success("Character minted");
+      callMethod("characterTokensOfOwner", address);
       setIsPending(false);
-      refetch();
     },
   });
 
@@ -83,7 +73,7 @@ export default function RootLayout({
           </p>
         </div>
         <div className="p-4 overflow-y-scroll grow">
-          {characterTokens?.map((tokenId, idx) => {
+          {characterTokens?.map((tokenId: bigint, idx: number) => {
             return (
               <div className="mb-8" key={`char-${idx}`}>
                 <Link href={`/character/${tokenId}`} className="cursor-pointer">

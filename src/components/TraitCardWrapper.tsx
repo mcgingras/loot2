@@ -1,9 +1,6 @@
-import { useContractRead } from "wagmi";
-import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
-
-import { TraitABI } from "@/abi/trait";
-
+import { useEffect } from "react";
 import TraitCard from "@/components/TraitCard";
+import { useContractStore } from "@/stores/contractStore";
 
 const TraitCardWrapper = ({
   traitId,
@@ -17,35 +14,37 @@ const TraitCardWrapper = ({
     equipped: boolean;
   }) => void;
 }) => {
-  const { data: traitData, error: traitDataError } = useContractRead({
-    chainId: 5,
-    address: TRAIT_CONTRACT_ADDRESS,
-    abi: TraitABI,
-    functionName: "getTraitDetails",
-    args: [traitId],
-  });
+  const registry = useContractStore().registry;
+  const callMethod = useContractStore().callMethod;
+
+  const { data: traitDetails, pending: traitDetailsPending } =
+    registry.getTraitDetails;
+
+  useEffect(() => {
+    callMethod("getTraitDetails", traitId);
+  }, [traitId]);
 
   return (
     <div>
-      {traitData && (
+      {traitDetails && (
         <TraitCard
-          trait={traitData}
-          onClick={() => onClick?.({ id: traitId, ...traitData })}
+          trait={traitDetails}
+          onClick={() => onClick?.({ id: traitId, ...traitDetails })}
         />
       )}
       <div className="flex flex-row space-x-2 items-center mt-1 ml-1">
         <span
           className={`h-2 w-2 rounded-full block ${
-            traitData?.equipped ? "bg-green-300" : "bg-gray-500"
+            traitDetails?.equipped ? "bg-green-300" : "bg-gray-500"
           }`}
         ></span>
         <span
           className={`text-xs ml-1 text-white ${
-            !traitData?.equipped && "opacity-50"
+            !traitDetails?.equipped && "opacity-50"
           }`}
         >
           Trait #{traitId.toString().padStart(4, "0")}
-          {!traitData?.equipped && " (unequipped)"}
+          {!traitDetails?.equipped && " (unequipped)"}
         </span>
       </div>
     </div>

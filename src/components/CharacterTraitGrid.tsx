@@ -20,8 +20,17 @@ import { AccountRegistryABI } from "@/abi/accountRegistry";
 import TraitCardWrapper from "@/components/TraitCardWrapper";
 import TraitRightSlider from "@/components/TraitRightSlider";
 import MintTraitCard from "@/components/MintTraitCard";
+import { useContractStore } from "@/stores/contractStore";
 
 const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
+  const registry = useContractStore().registry;
+  const callMethod = useContractStore().callMethod;
+
+  const { data: characterTokens, pending: characterTokensPending } =
+    registry.characterTokensOfOwner;
+  const { data: traitsOfOwnerData, pending: traitsOfOwnerPending } =
+    registry.traitsOfOwner;
+
   const [isSliderOpen, setIsSliderOpen] = useState<boolean>(false);
   const [selectedTrait, setSelectedTrait] = useState<{
     id: bigint;
@@ -41,14 +50,9 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
   });
 
-  const { data: traitTokenIds, refetch: refetchTraits } = useContractRead({
-    chainId: 5,
-    address: TRAIT_CONTRACT_ADDRESS,
-    abi: TraitABI,
-    functionName: "traitsOfOwner",
-    enabled: !!tbaAddress,
-    args: [tbaAddress as `0x${string}`],
-  });
+  useEffect(() => {
+    callMethod("traitsOfOwner", tbaAddress);
+  }, [tbaAddress]);
 
   const { config: equipConfig } = usePrepareContractWrite({
     chainId: 5,
@@ -78,7 +82,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
 
   const onSuccess = () => {
     setIsNewTraitPending(false);
-    refetchTraits();
+    callMethod("traitsOfOwner", tbaAddress);
   };
 
   useEffect(() => {
@@ -94,8 +98,8 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
       toast.success("Trait equipped");
       setIsEquipPending(false);
       setIsSliderOpen(false);
-      // refetchCharacter
-      // refetchTraitDetails (for selectedTrait)
+      callMethod("characterTokenURI", tokenId);
+      callMethod("getTraitDetails", selectedTrait?.id);
     },
   });
 
@@ -116,7 +120,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
         />
       )}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 p-4">
-        {traitTokenIds?.map((traitId, idx) => {
+        {traitsOfOwnerData?.map((traitId: bigint, idx: number) => {
           return (
             <TraitCardWrapper
               traitId={traitId}
