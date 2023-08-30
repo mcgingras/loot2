@@ -40,7 +40,7 @@ const MintTraitCard = ({
     abi: TraitABI,
     enabled: !!tbaAddress,
     functionName: "mint",
-    args: [tbaAddress as `0x${string}`, "HEAD_ARMOR"],
+    args: [tbaAddress as `0x${string}`],
   });
 
   const {

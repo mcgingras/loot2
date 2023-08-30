@@ -23,7 +23,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedTrait, setSelectedTrait] = useState<{
     id: bigint;
-    type: string;
+    traitType: string;
     name: string;
     equipped: boolean;
   }>();
@@ -46,7 +46,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     chainId: 5,
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
-    functionName: "tokensOfOwner",
+    functionName: "traitsOfOwner",
     enabled: !!tbaAddress,
     args: [tbaAddress as `0x${string}`],
   });

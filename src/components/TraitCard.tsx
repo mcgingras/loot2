@@ -2,7 +2,7 @@ export default function TraitCard({
   trait,
   onClick,
 }: {
-  trait: { equipped: boolean; type: string; name: string };
+  trait: { equipped: boolean; traitType: string; name: string };
   onClick?: () => void;
 }) {
   return (
@@ -13,7 +13,7 @@ export default function TraitCard({
       onClick={onClick}
     >
       <div className="w-full flex flex-row justify-between text-xs uppercase">
-        <span className="text-white/50">{trait.type}</span>
+        <span className="text-white/50">{trait.traitType}</span>
         <span className="text-white">{trait.name}</span>
       </div>
     </div>

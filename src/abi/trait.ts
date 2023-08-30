@@ -156,6 +156,49 @@ export const TraitABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    name: "equippedItems",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+    ],
+    name: "equippedTraitsOfOwner",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
@@ -179,13 +222,8 @@ export const TraitABI = [
         name: "tokenId",
         type: "uint256",
       },
-      {
-        internalType: "string",
-        name: "traitType",
-        type: "string",
-      },
     ],
-    name: "getItemByType",
+    name: "getItem",
     outputs: [
       {
         internalType: "string",
@@ -207,19 +245,26 @@ export const TraitABI = [
     name: "getTraitDetails",
     outputs: [
       {
-        internalType: "string",
-        name: "traitType",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-      {
-        internalType: "bool",
-        name: "equipped",
-        type: "bool",
+        components: [
+          {
+            internalType: "string",
+            name: "traitType",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "equipped",
+            type: "bool",
+          },
+        ],
+        internalType: "struct Trait.TraitDetails",
+        name: "",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
@@ -250,18 +295,7 @@ export const TraitABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "traitType",
-        type: "string",
-      },
-    ],
+    inputs: [],
     name: "mint",
     outputs: [],
     stateMutability: "nonpayable",
@@ -270,9 +304,9 @@ export const TraitABI = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "traitType",
-        type: "string",
+        internalType: "address",
+        name: "to",
+        type: "address",
       },
     ],
     name: "mint",
@@ -476,25 +510,6 @@ export const TraitABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_owner",
-        type: "address",
-      },
-    ],
-    name: "tokensOfOwner",
-    outputs: [
-      {
-        internalType: "uint256[]",
-        name: "",
-        type: "uint256[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "totalSupply",
     outputs: [
@@ -531,6 +546,25 @@ export const TraitABI = [
         internalType: "bool",
         name: "equipped",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+    ],
+    name: "traitsOfOwner",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
       },
     ],
     stateMutability: "view",

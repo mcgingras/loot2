@@ -12,7 +12,7 @@ const TraitCardWrapper = ({
   traitId: bigint;
   onClick?: (trait: {
     id: bigint;
-    type: string;
+    traitType: string;
     name: string;
     equipped: boolean;
   }) => void;
@@ -25,29 +25,27 @@ const TraitCardWrapper = ({
     args: [traitId],
   });
 
-  const trait = {
-    id: traitId,
-    type: traitData?.[0],
-    name: traitData?.[1],
-    equipped: traitData?.[2],
-  } as { id: bigint; type: string; name: string; equipped: boolean };
-
   return (
     <div>
-      <TraitCard trait={trait} onClick={() => onClick?.(trait)} />
+      {traitData && (
+        <TraitCard
+          trait={traitData}
+          onClick={() => onClick?.({ id: traitId, ...traitData })}
+        />
+      )}
       <div className="flex flex-row space-x-2 items-center mt-1 ml-1">
         <span
           className={`h-2 w-2 rounded-full block ${
-            trait.equipped ? "bg-green-300" : "bg-gray-500"
+            traitData?.equipped ? "bg-green-300" : "bg-gray-500"
           }`}
         ></span>
         <span
           className={`text-xs ml-1 text-white ${
-            !trait.equipped && "opacity-50"
+            !traitData?.equipped && "opacity-50"
           }`}
         >
           Trait #{traitId.toString().padStart(4, "0")}
-          {!trait.equipped && " (unequipped)"}
+          {!traitData?.equipped && " (unequipped)"}
         </span>
       </div>
     </div>

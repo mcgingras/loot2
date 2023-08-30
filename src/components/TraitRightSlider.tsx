@@ -14,7 +14,7 @@ const TraitRightSlider = ({
   isSliderOpen: boolean;
   setIsSliderOpen: Dispatch<SetStateAction<boolean>>;
   selectedTrait: {
-    type: string;
+    traitType: string;
     name: string;
     equipped: boolean;
   };
@@ -35,7 +35,7 @@ const TraitRightSlider = ({
             Trait #0001
           </h1>
           <span className="uppercase text-white/50 text-xs mb-4 block">
-            type: {selectedTrait!.type}
+            type: {selectedTrait!.traitType}
           </span>
           <TraitCard trait={selectedTrait!} />
         </div>

@@ -9,7 +9,7 @@ const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 export default function Store() {
   const [isSlider, setIsSliderOpen] = useState<boolean>(false);
   const [selectedTrait, setSelectedTrait] = useState<{
-    type: string;
+    traitType: string;
     name: string;
     equipped: boolean;
   }>();
@@ -45,7 +45,7 @@ export default function Store() {
                     className="border border-white/20 p-4 aspect-square hover:border-white/50 transition-all cursor-pointer"
                     onClick={() => {
                       setSelectedTrait({
-                        type: "Weapon",
+                        traitType: "Weapon",
                         name: "Long sword",
                         equipped: false,
                       });
