@@ -166,3 +166,24 @@ export const useContractStore = create<ContractStore>((set, get) => ({
     return registry[method].data[argHash(args)];
   },
 }));
+
+// exploring an approach where getData calls callMethod before returning data
+// const experiment = {
+//   getDataForMethod: async (method: string, ...args: any[]) => {
+//     // call method and set it in registry
+//     const callMethod = get().callMethod;
+//     await callMethod(method, ...args);
+
+//     // return from registry
+//     const registry = get().registry;
+//     return registry[method].data[argHash(args)];
+//   },
+// };
+
+// use
+// const data = getDataForMethod("testMethod", 1);
+// this is starting to just feel like wagmi except with a convenience layer to abstract ABIs + contract address + chainId
+// the only benefit so far from what I can tell is that since we have a global store we dont need call refetch ever
+// I wonder if I have two components and component A reads some data that components B writes and mutates... if I
+// call refetch from component B will component A update? If WAGMI has some shared cache then yes maybe, similar to SWR
+// and how it does data deduplication. But if not, then my little experiment here becomes more compelling.

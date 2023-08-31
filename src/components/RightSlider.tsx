@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { Toaster } from "react-hot-toast";
 
 export const RightSlider = ({
   open,
@@ -69,6 +70,10 @@ export const RightSlider = ({
                       `}
                     >
                       {children}
+                      <Toaster
+                        position="bottom-right"
+                        containerClassName="text-xs uppercase font-bold"
+                      />
                     </div>
                   </div>
                 </Dialog.Panel>

@@ -52,7 +52,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     callMethod("traitsOfOwner", tbaAddress);
   }, [tbaAddress]);
 
-  const { config: equipConfig } = usePrepareContractWrite({
+  const { config: equipConfig, error: equipError } = usePrepareContractWrite({
     chainId: 5,
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
@@ -62,6 +62,8 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
   });
 
   const { data: equipData, write: equip } = useContractWrite(equipConfig);
+
+  console.log("eee", equipError);
 
   const { config: unequipConfig } = usePrepareContractWrite({
     chainId: 5,
@@ -112,6 +114,11 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
           action={{
             label: selectedTrait.equipped ? "Unequip" : "Equip",
             callback: () => {
+              if (equipError?.message) {
+                console.log("message", equipError?.message);
+                toast.error("A trait with this type is already equipped.");
+                return;
+              }
               selectedTrait.equipped ? unequip?.() : equip?.();
             },
           }}

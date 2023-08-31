@@ -2,12 +2,18 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Wagmi from "@/components/Wagmi";
 import Profile from "../components/Profile";
+import { IBM_Plex_Mono } from "next/font/google";
 
 export const metadata: Metadata = {
   title: "Loot2",
   description:
     "Token bound upgrade to the original loot project. By Station Labs.",
 };
+
+const plex = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
 
 export default function RootLayout({
   children,
@@ -17,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* god this looks so much worse without IBM plex */}
-      <body className="font-[monospace]">
+      <body className={plex.className}>
         <Wagmi>
           <main className="md:h-screen w-full bg-black">
             <nav className="border-b border-white/20 px-4 py-2 flex flex-row justify-between">
