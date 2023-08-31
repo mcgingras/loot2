@@ -31,9 +31,9 @@ export default function RootLayout({
   const { connect } = useConnect({
     connector: new InjectedConnector(),
   });
-  const { registry, callMethod } = useContractStore();
-  const { data: characterTokens, pending: characterTokensPending } =
-    registry.characterTokensOfOwner;
+  const { callMethod, getDataForMethod } = useContractStore();
+
+  const characterTokens = getDataForMethod("characterTokensOfOwner", address);
 
   useEffect(() => {
     callMethod("characterTokensOfOwner", address);

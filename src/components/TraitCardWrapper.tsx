@@ -14,11 +14,8 @@ const TraitCardWrapper = ({
     equipped: boolean;
   }) => void;
 }) => {
-  const registry = useContractStore().registry;
-  const callMethod = useContractStore().callMethod;
-
-  const { data: traitDetails, pending: traitDetailsPending } =
-    registry.getTraitDetails;
+  const { callMethod, getDataForMethod } = useContractStore();
+  const traitDetails = getDataForMethod("getTraitDetails", traitId);
 
   useEffect(() => {
     callMethod("getTraitDetails", traitId);

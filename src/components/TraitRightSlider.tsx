@@ -17,6 +17,7 @@ const TraitRightSlider = ({
   setIsSliderOpen: Dispatch<SetStateAction<boolean>>;
   isEquipPending: boolean;
   selectedTrait: {
+    id: bigint;
     traitType: string;
     name: string;
     equipped: boolean;
@@ -36,7 +37,7 @@ const TraitRightSlider = ({
       <div className="flex flex-col h-full">
         <div className="flex flex-col p-4">
           <h1 className={`${grenze.className} text-white text-4xl mb-2`}>
-            Trait #0001
+            Trait #{selectedTrait.id.toString().padStart(4, "0")}
           </h1>
           <span className="uppercase text-white/50 text-xs mb-4 block">
             type: {selectedTrait!.traitType}

@@ -12,6 +12,16 @@ import { CharacterABI } from "@/abi/character";
 import { TraitABI } from "@/abi/trait";
 import { AccountRegistryABI } from "@/abi/accountRegistry";
 
+const argHash = (args: any[]) =>
+  args
+    .map((arg: any) => {
+      if (typeof arg === "bigint") {
+        arg = arg.toString();
+      }
+      return JSON.stringify(arg);
+    })
+    .join("");
+
 const goerliClient = createPublicClient({
   chain: goerli,
   transport: http(
@@ -23,7 +33,8 @@ interface ContractStore {
   registry: any;
   callMethod: (method: string, ...args: any[]) => void;
   setPendingForMethod: (method: string, newPending: boolean) => void;
-  setDataForMethod: (method: string, newData: any) => void;
+  setDataForMethod: (method: string, args: any, newData: any) => void;
+  getDataForMethod: (method: string, args: any) => any;
 }
 
 const DEFAULT_REGISTRY = {
@@ -43,7 +54,7 @@ const DEFAULT_REGISTRY = {
       return data;
     },
     pending: false,
-    data: [],
+    data: {},
   },
   // need to make this contract specific
   characterTokenURI: {
@@ -62,7 +73,7 @@ const DEFAULT_REGISTRY = {
       return data;
     },
     pending: false,
-    data: undefined,
+    data: {},
   },
   traitsOfOwner: {
     fetch: async (...args: [`0x${string}`]) => {
@@ -80,7 +91,7 @@ const DEFAULT_REGISTRY = {
       return data;
     },
     pending: false,
-    data: [],
+    data: {},
   },
   getTraitDetails: {
     fetch: async (...args: [bigint]) => {
@@ -98,7 +109,7 @@ const DEFAULT_REGISTRY = {
       return data;
     },
     pending: false,
-    data: undefined,
+    data: {},
   },
 };
 
@@ -117,12 +128,13 @@ export const useContractStore = create<ContractStore>((set, get) => ({
     const { fetch, pending } = registry[method];
 
     // assumes we don't want to allow multiple calls to the same method while one is pending
-    if (pending) {
-      return;
-    }
+    // if (pending) {
+    //   return;
+    // }
+
     setPendingForMethod(method, true);
     fetch(...args).then((newData: any) => {
-      setDataForMethod(method, newData);
+      setDataForMethod(method, args, newData);
       setPendingForMethod(method, false);
     });
   },
@@ -136,14 +148,21 @@ export const useContractStore = create<ContractStore>((set, get) => ({
         },
       },
     })),
-  setDataForMethod: (method: string, newData: any) =>
+  setDataForMethod: (method: string, args: any, newData: any) =>
     set((state) => ({
       registry: {
         ...state.registry,
         [method]: {
           ...state.registry[method],
-          data: newData,
+          data: {
+            ...state.registry[method].data,
+            [argHash(args)]: newData,
+          },
         },
       },
     })),
+  getDataForMethod: (method: string, ...args: any[]) => {
+    const registry = get().registry;
+    return registry[method].data[argHash(args)];
+  },
 }));

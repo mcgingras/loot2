@@ -25,13 +25,8 @@ import { useContractStore } from "@/stores/contractStore";
 
 const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
   const { isConnected } = useAccount();
-  const registry = useContractStore().registry;
-  const callMethod = useContractStore().callMethod;
 
-  const { data: characterTokens, pending: characterTokensPending } =
-    registry.characterTokensOfOwner;
-  const { data: traitsOfOwnerData, pending: traitsOfOwnerPending } =
-    registry.traitsOfOwner;
+  const { callMethod, getDataForMethod } = useContractStore();
 
   const [isSliderOpen, setIsSliderOpen] = useState<boolean>(false);
   const [selectedTrait, setSelectedTrait] = useState<{
@@ -52,6 +47,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
     args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
   });
 
+  const traitsOfOwnerData = getDataForMethod("traitsOfOwner", tbaAddress);
   useEffect(() => {
     callMethod("traitsOfOwner", tbaAddress);
   }, [tbaAddress]);

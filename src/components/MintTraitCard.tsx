@@ -26,7 +26,7 @@ const MintTraitCard = ({
   onPending: () => void;
   onSuccess: () => void;
 }) => {
-  const { data: tbaAddress, error: tbaAddressError } = useContractRead({
+  const { data: tbaAddress } = useContractRead({
     chainId: 5,
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
@@ -34,7 +34,7 @@ const MintTraitCard = ({
     args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
   });
 
-  const { config, error } = usePrepareContractWrite({
+  const { config } = usePrepareContractWrite({
     chainId: 5,
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
@@ -43,12 +43,7 @@ const MintTraitCard = ({
     args: [tbaAddress as `0x${string}`],
   });
 
-  const {
-    data: mintData,
-    isLoading: isMintLoading,
-    isSuccess: isMintSuccessful,
-    write: mint,
-  } = useContractWrite(config);
+  const { data: mintData, write: mint } = useContractWrite(config);
 
   useEffect(() => {
     if (mintData?.hash) {

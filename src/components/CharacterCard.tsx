@@ -8,9 +8,8 @@ const CharacterCard = ({
   tokenId: bigint;
   onClick?: () => void;
 }) => {
-  const { registry, callMethod } = useContractStore();
-  const { data: tokenURI, pending: tokenURIPending } =
-    registry.characterTokenURI;
+  const { callMethod, getDataForMethod } = useContractStore();
+  const tokenURI = getDataForMethod("characterTokenURI", tokenId);
 
   useEffect(() => {
     callMethod("characterTokenURI", tokenId);
