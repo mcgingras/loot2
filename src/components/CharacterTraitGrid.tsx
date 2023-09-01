@@ -114,8 +114,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
           action={{
             label: selectedTrait.equipped ? "Unequip" : "Equip",
             callback: () => {
-              if (equipError?.message) {
-                console.log("message", equipError?.message);
+              if (!selectedTrait.equipped && equipError?.message) {
                 toast.error("A trait with this type is already equipped.");
                 return;
               }
