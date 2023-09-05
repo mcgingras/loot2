@@ -1,7 +1,3 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useContractRead, useAccount } from "wagmi";
 import Link from "next/link";
 import {
   CHARACTER_CONTRACT_ADDRESS,
@@ -11,35 +7,48 @@ import {
 import { AccountRegistryABI } from "@/abi/accountRegistry";
 import TraitCardWrapper from "@/components/TraitCardWrapper";
 import MintTraitCard from "@/components/MintTraitCard";
-import { useContractStore } from "@/stores/contractStore";
+import { createPublicClient, http } from "viem";
+import { goerli } from "viem/chains";
+import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
+import { TraitABI } from "@/abi/trait";
 
-const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
-  const { isConnected } = useAccount();
+const getTraitsOfOwner = async (ownerAddress: `0x${string}`) => {
+  const goerliClient = createPublicClient({
+    chain: goerli,
+    transport: http(
+      `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+    ),
+  });
+  const data = await goerliClient.readContract({
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "traitsOfOwner",
+    args: [ownerAddress],
+  });
 
-  const { callMethod, getDataForMethod } = useContractStore();
-  const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
+  return data;
+};
 
-  const { data: tbaAddress } = useContractRead({
-    chainId: 5,
+const getTbaAddress = async (tokenId: bigint) => {
+  const goerliClient = createPublicClient({
+    chain: goerli,
+    transport: http(
+      `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+    ),
+  });
+  const data = await goerliClient.readContract({
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
     args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
   });
 
-  const traitsOfOwnerData = getDataForMethod("traitsOfOwner", tbaAddress);
-  useEffect(() => {
-    callMethod("traitsOfOwner", tbaAddress);
-  }, [tbaAddress]);
+  return data;
+};
 
-  const onPending = () => {
-    setIsNewTraitPending(true);
-  };
-
-  const onSuccess = () => {
-    setIsNewTraitPending(false);
-    callMethod("traitsOfOwner", tbaAddress);
-  };
+const CharacterTraitGrid = async ({ tokenId }: { tokenId: bigint }) => {
+  const tbaAddress = await getTbaAddress(tokenId);
+  const traitsOfOwnerData = await getTraitsOfOwner(tbaAddress);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 p-4">
@@ -51,20 +60,7 @@ const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
         );
       })}
 
-      {isNewTraitPending && (
-        <div className="border border-white/20 p-4 aspect-square hover:border-white/50 transition-all cursor-pointer animate-pulse">
-          <div className="w-full h-full flex-row text-xs text-white flex items-center justify-center">
-            <span>Minting new trait...</span>
-          </div>
-        </div>
-      )}
-      {isConnected && (
-        <MintTraitCard
-          tokenId={tokenId}
-          onPending={onPending}
-          onSuccess={onSuccess}
-        />
-      )}
+      <MintTraitCard tokenId={tokenId} />
     </div>
   );
 };

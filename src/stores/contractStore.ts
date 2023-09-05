@@ -5,12 +5,10 @@ import { goerli } from "viem/chains";
 import {
   CHARACTER_CONTRACT_ADDRESS,
   TRAIT_CONTRACT_ADDRESS,
-  REGISTRY_CONTRACT_ADDRESS,
 } from "@/utils/constants";
 
 import { CharacterABI } from "@/abi/character";
 import { TraitABI } from "@/abi/trait";
-import { AccountRegistryABI } from "@/abi/accountRegistry";
 
 const argHash = (args: any[]) =>
   args
