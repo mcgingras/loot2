@@ -1,55 +1,68 @@
-import { Dispatch, SetStateAction } from "react";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import RightSlider from "@/components/RightSlider";
 import TraitCard from "@/components/TraitCard";
 import { Grenze_Gotisch } from "next/font/google";
-import { useAccount } from "wagmi";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
+import { TraitABI } from "@/abi/trait";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
 const TraitRightSlider = ({
-  isSliderOpen,
-  setIsSliderOpen,
-  isEquipPending,
-  selectedTrait,
-  action,
+  traitId,
+  traitDetails,
 }: {
-  isSliderOpen: boolean;
-  setIsSliderOpen: Dispatch<SetStateAction<boolean>>;
-  isEquipPending: boolean;
-  selectedTrait: {
-    id: bigint;
-    traitType: string;
-    name: string;
-    equipped: boolean;
-  };
-  action?: {
-    label: string;
-    callback: () => void;
-  };
+  traitId: bigint;
+  traitDetails: { traitType: string; name: string; equipped: boolean };
 }) => {
+  const [open, setOpen] = useState<boolean>(true);
+  const router = useRouter();
   const { isConnected } = useAccount();
+
+  const { config: equipConfig } = usePrepareContractWrite({
+    chainId: 5,
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "equip",
+    args: [traitId],
+  });
+
+  const {
+    data: equipData,
+    isLoading: isEquipLoading,
+    write: equip,
+  } = useContractWrite(equipConfig);
+
   return (
     <RightSlider
-      open={isSliderOpen}
-      setOpen={setIsSliderOpen}
+      open={open}
+      setOpen={(open: boolean) => {
+        setOpen(open);
+        setTimeout(() => {
+          router.push("/character/1");
+        }, 500);
+      }}
       useInnerPadding={false}
     >
       <div className="flex flex-col h-full">
         <div className="flex flex-col p-4">
           <h1 className={`${grenze.className} text-white text-4xl mb-2`}>
-            Trait #{selectedTrait.id.toString().padStart(4, "0")}
+            Trait #{traitId.toString().padStart(4, "0")}
           </h1>
           <span className="uppercase text-white/50 text-xs mb-4 block">
-            type: {selectedTrait!.traitType}
+            type: {traitDetails.traitType}
           </span>
-          <TraitCard trait={selectedTrait!} />
+          <TraitCard trait={traitDetails} />
         </div>
-        {action && isConnected && (
+        {isConnected && (
           <button
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
-            onClick={() => action.callback()}
+            onClick={() => equip?.()}
           >
-            <span>{isEquipPending ? "Pending..." : action.label}</span>
+            <span>{isEquipLoading ? "Pending..." : "Equip"}</span>
           </button>
         )}
       </div>

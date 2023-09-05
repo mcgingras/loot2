@@ -1,30 +1,33 @@
-"use client";
-
 // https://twitter.com/diegohaz/status/1688191712957460481?s=20
-import { useState } from "react";
-import RightSlider from "@/components/RightSlider";
-import { useRouter } from "next/navigation";
+import TraitRightSlider from "@/components/TraitRightSlider";
+import { createPublicClient, http } from "viem";
+import { goerli } from "viem/chains";
+import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
+import { TraitABI } from "@/abi/trait";
 
-const Page = () => {
-  const [open, setOpen] = useState<boolean>(true);
-  const router = useRouter();
+const getTraitDetails = async (traitId: bigint) => {
+  const goerliClient = createPublicClient({
+    chain: goerli,
+    transport: http(
+      `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+    ),
+  });
+  const data = await goerliClient.readContract({
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "getTraitDetails",
+    args: [traitId],
+  });
+
+  return data;
+};
+
+const Page = async ({ params }: { params: any }) => {
+  const traitId = BigInt(params.traitId);
+  const traitDetails = await getTraitDetails(traitId);
 
   return (
-    <RightSlider
-      key="slider"
-      open={open}
-      setOpen={(open: boolean) => {
-        setOpen(open);
-        setTimeout(() => {
-          router.push("/character/1");
-        }, 500);
-      }}
-      useInnerPadding={false}
-    >
-      <div className="p-4 border-b border-white/20 w-full">
-        <h2 className="text-white uppercase">No character selected</h2>
-      </div>
-    </RightSlider>
+    <TraitRightSlider traitId={params.traitId} traitDetails={traitDetails} />
   );
 };
 
