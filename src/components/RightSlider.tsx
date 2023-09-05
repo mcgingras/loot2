@@ -14,8 +14,13 @@ export const RightSlider = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Transition.Root show={open} as={Fragment} appear={true}>
-      <Dialog as="div" className="relative z-10" onClose={() => {}}>
+    <Transition.Root show={open} as={Fragment} appear={true} unmount={false}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => {}}
+        unmount={false}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -24,6 +29,7 @@ export const RightSlider = ({
           leave="ease-in-out duration-500"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
+          unmount={false}
         >
           <div className="fixed inset-0 bg-black bg-opacity-75 transition-opacity" />
         </Transition.Child>

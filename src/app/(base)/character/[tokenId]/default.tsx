@@ -1,6 +1,6 @@
 import CharacterTraitGrid from "@/components/CharacterTraitGrid";
 
-const Page = ({ params }: { params: { tokenId: bigint } }) => {
+const Default = ({ params }: { params: { tokenId: bigint } }) => {
   return (
     <>
       <div className="p-4 border-b border-white/20 w-full">
@@ -16,4 +16,4 @@ const Page = ({ params }: { params: { tokenId: bigint } }) => {
   );
 };
 
-export default Page;
+export default Default;
