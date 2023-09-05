@@ -54,8 +54,11 @@ const CharacterTraitGrid = async ({ tokenId }: { tokenId: bigint }) => {
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 p-4">
       {traitsOfOwnerData?.map((traitId: bigint, idx: number) => {
         return (
-          <Link href={`/character/${tokenId}/trait/${traitId}`}>
-            <TraitCardWrapper traitId={traitId} key={`trait=${idx}`} />
+          <Link
+            href={`/character/${tokenId}/trait/${traitId}`}
+            key={`trait=${idx}`}
+          >
+            <TraitCardWrapper traitId={traitId} />
           </Link>
         );
       })}
