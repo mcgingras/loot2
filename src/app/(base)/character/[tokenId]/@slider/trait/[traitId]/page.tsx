@@ -1,7 +1,7 @@
 // https://twitter.com/diegohaz/status/1688191712957460481?s=20
 import TraitRightSlider from "@/components/TraitRightSlider";
 import { createPublicClient, http } from "viem";
-import { goerli, baseGoerli } from "viem/chains";
+import { baseGoerli } from "viem/chains";
 import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
 import { TraitABI } from "@/abi/trait";
 
@@ -9,13 +9,6 @@ const getTraitDetails = async (traitId: bigint) => {
   const baseGoerliClient = createPublicClient({
     chain: baseGoerli,
     transport: http(`https://goerli.base.org`),
-  });
-
-  const goerliClient = createPublicClient({
-    chain: goerli,
-    transport: http(
-      `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-    ),
   });
 
   const data = await baseGoerliClient.readContract({
@@ -33,7 +26,11 @@ const Page = async ({ params }: { params: any }) => {
   const traitDetails = await getTraitDetails(traitId);
 
   return (
-    <TraitRightSlider traitId={params.traitId} traitDetails={traitDetails} />
+    <TraitRightSlider
+      characterId={params.tokenId}
+      traitId={params.traitId}
+      traitDetails={traitDetails}
+    />
   );
 };
 

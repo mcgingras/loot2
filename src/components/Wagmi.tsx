@@ -1,14 +1,14 @@
 "use client";
 
-import { createConfig, configureChains, mainnet, WagmiConfig } from "wagmi";
-import { goerli, base, baseGoerli } from "wagmi/chains";
+import { createConfig, configureChains, WagmiConfig } from "wagmi";
+import { baseGoerli } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, goerli, base, baseGoerli],
+  [baseGoerli],
   [
     alchemyProvider({
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY as string,

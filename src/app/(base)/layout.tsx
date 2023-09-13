@@ -12,9 +12,15 @@ import {
 import { InjectedConnector } from "wagmi/connectors/injected";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
-import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
+import {
+  CHARACTER_CONTRACT_ADDRESS,
+  REGISTRY_CONTRACT_ADDRESS,
+  ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+  SALT,
+} from "@/utils/constants";
 import CharacterCard from "@/components/CharacterCard";
 import { CharacterABI } from "@/abi/character";
+import { AccountRegistryABI } from "@/abi/accountRegistry";
 import { useContractStore } from "@/stores/contractStore";
 
 const grenze = Grenze_Gotisch({
@@ -32,7 +38,6 @@ export default function RootLayout({
     connector: new InjectedConnector(),
   });
   const { callMethod, getDataForMethod } = useContractStore();
-
   const characterTokens = getDataForMethod("characterTokensOfOwner", address);
 
   useEffect(() => {
@@ -41,14 +46,37 @@ export default function RootLayout({
 
   const [isPending, setIsPending] = useState<boolean>(false);
 
+  const { config: createTBAConfig } = usePrepareContractWrite({
+    chainId: 84531,
+    address: REGISTRY_CONTRACT_ADDRESS,
+    abi: AccountRegistryABI,
+    functionName: "createAccount",
+    args: [
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+      BigInt(84531),
+      CHARACTER_CONTRACT_ADDRESS,
+      BigInt(0),
+      SALT,
+      "0x",
+    ],
+  });
+
+  const { data: createTBaData, write: createTBA } =
+    useContractWrite(createTBAConfig);
+
   const { config } = usePrepareContractWrite({
-    chainId: 5,
+    chainId: 84531,
     address: CHARACTER_CONTRACT_ADDRESS,
     abi: CharacterABI,
     functionName: "mint",
   });
 
   const { data: mintData, write: mint } = useContractWrite(config);
+
+  const createTBAAndMint = async () => {
+    await mint?.();
+    await createTBA?.();
+  };
 
   useEffect(() => {
     if (mintData?.hash) {
@@ -57,7 +85,7 @@ export default function RootLayout({
   }, [mintData]);
 
   useWaitForTransaction({
-    chainId: 5,
+    chainId: 84531,
     hash: mintData?.hash,
     onSuccess: () => {
       toast.success("Character minted");
@@ -101,7 +129,7 @@ export default function RootLayout({
             <div
               className="border border-white/20 hover:border-white/50 transition-colors w-full aspect-square flex items-center justify-center text-white text-xs cursor-pointer"
               onClick={() => {
-                isConnected ? mint?.() : connect();
+                isConnected ? createTBAAndMint() : connect();
               }}
             >
               {isConnected

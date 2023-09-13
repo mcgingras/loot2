@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createPublicClient, http } from "viem";
-import { goerli, baseGoerli } from "viem/chains";
+import { baseGoerli } from "viem/chains";
 
 import {
   CHARACTER_CONTRACT_ADDRESS,
@@ -22,14 +22,7 @@ const argHash = (args: any[]) =>
 
 const baseGoerliClient = createPublicClient({
   chain: baseGoerli,
-  transport: http(`https://goerli.base.org`),
-});
-
-const goerliClient = createPublicClient({
-  chain: goerli,
-  transport: http(
-    `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-  ),
+  transport: http(),
 });
 
 interface ContractStore {

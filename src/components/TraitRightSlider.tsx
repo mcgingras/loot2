@@ -5,16 +5,32 @@ import { useRouter } from "next/navigation";
 import RightSlider from "@/components/RightSlider";
 import TraitCard from "@/components/TraitCard";
 import { Grenze_Gotisch } from "next/font/google";
-import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
-import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
+import {
+  useAccount,
+  useContractWrite,
+  usePrepareContractWrite,
+  useContractRead,
+} from "wagmi";
+import {
+  ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+  CHARACTER_CONTRACT_ADDRESS,
+  TRAIT_CONTRACT_ADDRESS,
+  REGISTRY_CONTRACT_ADDRESS,
+  SALT,
+} from "@/utils/constants";
 import { TraitABI } from "@/abi/trait";
+import { AccountABI } from "@/abi/account";
+import { AccountRegistryABI } from "@/abi/accountRegistry";
+import { encodeFunctionData } from "viem";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
 const TraitRightSlider = ({
+  characterId,
   traitId,
   traitDetails,
 }: {
+  characterId: bigint;
   traitId: bigint;
   traitDetails: { traitType: string; name: string; equipped: boolean };
 }) => {
@@ -22,12 +38,38 @@ const TraitRightSlider = ({
   const router = useRouter();
   const { isConnected } = useAccount();
 
+  const { data: tbaAddress } = useContractRead({
+    chainId: 84531,
+    address: REGISTRY_CONTRACT_ADDRESS,
+    abi: AccountRegistryABI,
+    functionName: "account",
+    args: [
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+      BigInt(84531),
+      CHARACTER_CONTRACT_ADDRESS,
+      characterId,
+      SALT,
+    ],
+  });
+
+  console.log(tbaAddress);
+
+  // need to call equip / unequip through the TBA
   const { config: equipConfig } = usePrepareContractWrite({
-    chainId: 5,
-    address: TRAIT_CONTRACT_ADDRESS,
-    abi: TraitABI,
-    functionName: "equip",
-    args: [traitId],
+    chainId: 84531,
+    address: tbaAddress,
+    abi: AccountABI,
+    functionName: "execute",
+    args: [
+      TRAIT_CONTRACT_ADDRESS,
+      BigInt(0),
+      encodeFunctionData({
+        abi: TraitABI,
+        functionName: "equip",
+        args: [traitId],
+      }),
+      BigInt(0),
+    ],
   });
 
   const {

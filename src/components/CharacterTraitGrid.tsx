@@ -8,11 +8,11 @@ import { AccountRegistryABI } from "@/abi/accountRegistry";
 import TraitCardWrapper from "@/components/TraitCardWrapper";
 import MintTraitCard from "@/components/MintTraitCard";
 import { createPublicClient, http } from "viem";
-import { goerli, baseGoerli } from "viem/chains";
+import { baseGoerli } from "viem/chains";
 import {
   TRAIT_CONTRACT_ADDRESS,
   SALT,
-  ACCOUNT_IMPLEMENTATION_CONTRACT_ADDERSS,
+  ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
 } from "@/utils/constants";
 import { TraitABI } from "@/abi/trait";
 
@@ -21,12 +21,16 @@ const baseGoerliClient = createPublicClient({
   transport: http(`https://goerli.base.org`),
 });
 
-const goerliClient = createPublicClient({
-  chain: goerli,
-  transport: http(
-    `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-  ),
-});
+const balanceOf = async (ownerAddress: `0x${string}`) => {
+  const data = await baseGoerliClient.readContract({
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "balanceOf",
+    args: [ownerAddress],
+  });
+
+  return data;
+};
 
 const getTraitsOfOwner = async (ownerAddress: `0x${string}`) => {
   const data = await baseGoerliClient.readContract({
@@ -45,8 +49,8 @@ const getTbaAddress = async (tokenId: bigint) => {
     abi: AccountRegistryABI,
     functionName: "account",
     args: [
-      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDERSS,
-      BigInt(5),
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+      BigInt(84531),
       CHARACTER_CONTRACT_ADDRESS,
       tokenId,
       SALT,
@@ -58,6 +62,7 @@ const getTbaAddress = async (tokenId: bigint) => {
 
 const CharacterTraitGrid = async ({ tokenId }: { tokenId: bigint }) => {
   const tbaAddress = await getTbaAddress(tokenId);
+  const balanceOfData = await balanceOf(tbaAddress);
   const traitsOfOwnerData = await getTraitsOfOwner(tbaAddress);
 
   return (
