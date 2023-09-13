@@ -1,6 +1,17 @@
 export const TraitABI = [
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_traitStorage",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_svgStorageBase",
+        type: "address",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
@@ -52,6 +63,25 @@ export const TraitABI = [
       },
     ],
     name: "ApprovalForAll",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
     type: "event",
   },
   {
@@ -262,7 +292,7 @@ export const TraitABI = [
             type: "bool",
           },
         ],
-        internalType: "struct Trait.TraitDetails",
+        internalType: "struct TraitDetails",
         name: "",
         type: "tuple",
       },
@@ -328,6 +358,19 @@ export const TraitABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -344,6 +387,13 @@ export const TraitABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -429,6 +479,19 @@ export const TraitABI = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "svgStorageBase",
+    outputs: [
+      {
+        internalType: "contract SVGStorageBase",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -552,6 +615,19 @@ export const TraitABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "traitStorage",
+    outputs: [
+      {
+        internalType: "contract TraitStorage",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -589,6 +665,19 @@ export const TraitABI = [
       },
     ],
     name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

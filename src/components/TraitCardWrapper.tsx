@@ -1,18 +1,23 @@
 import TraitCard from "@/components/TraitCard";
 import { createPublicClient, http } from "viem";
-import { goerli } from "viem/chains";
+import { goerli, baseGoerli } from "viem/chains";
 import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
 import { TraitABI } from "@/abi/trait";
 
-const getTraitDetails = async (traitId: bigint) => {
-  const goerliClient = createPublicClient({
-    chain: goerli,
-    transport: http(
-      `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-    ),
-  });
+const baseGoerliClient = createPublicClient({
+  chain: baseGoerli,
+  transport: http(`https://goerli.base.org`),
+});
 
-  const data = await goerliClient.readContract({
+const goerliClient = createPublicClient({
+  chain: goerli,
+  transport: http(
+    `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+  ),
+});
+
+const getTraitDetails = async (traitId: bigint) => {
+  const data = await baseGoerliClient.readContract({
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
     functionName: "getTraitDetails",

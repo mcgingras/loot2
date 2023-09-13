@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createPublicClient, http } from "viem";
-import { goerli } from "viem/chains";
+import { goerli, baseGoerli } from "viem/chains";
 
 import {
   CHARACTER_CONTRACT_ADDRESS,
@@ -19,6 +19,11 @@ const argHash = (args: any[]) =>
       return JSON.stringify(arg);
     })
     .join("");
+
+const baseGoerliClient = createPublicClient({
+  chain: baseGoerli,
+  transport: http(`https://goerli.base.org`),
+});
 
 const goerliClient = createPublicClient({
   chain: goerli,
@@ -42,7 +47,7 @@ const DEFAULT_REGISTRY = {
         return [];
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: CHARACTER_CONTRACT_ADDRESS,
         abi: CharacterABI,
         functionName: "tokensOfOwner",
@@ -61,7 +66,7 @@ const DEFAULT_REGISTRY = {
         return undefined;
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: CHARACTER_CONTRACT_ADDRESS,
         abi: CharacterABI,
         functionName: "tokenURI",
@@ -79,7 +84,7 @@ const DEFAULT_REGISTRY = {
         return [];
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: TRAIT_CONTRACT_ADDRESS,
         abi: TraitABI,
         functionName: "traitsOfOwner",
@@ -97,7 +102,7 @@ const DEFAULT_REGISTRY = {
         return undefined;
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: TRAIT_CONTRACT_ADDRESS,
         abi: TraitABI,
         functionName: "getTraitDetails",

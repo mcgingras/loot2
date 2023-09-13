@@ -11,6 +11,21 @@ export const CharacterABI = [
         name: "_registry",
         type: "address",
       },
+      {
+        internalType: "address",
+        name: "_implementation",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_svgStorageBase",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_svgStorageEmpty",
+        type: "address",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
@@ -63,6 +78,25 @@ export const CharacterABI = [
       },
     ],
     name: "ApprovalForAll",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
     type: "event",
   },
   {
@@ -147,6 +181,19 @@ export const CharacterABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "implementation",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -178,6 +225,19 @@ export const CharacterABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+    ],
+    name: "mint",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "name",
     outputs: [
@@ -185,6 +245,19 @@ export const CharacterABI = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -233,6 +306,13 @@ export const CharacterABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -307,32 +387,6 @@ export const CharacterABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_registry",
-        type: "address",
-      },
-    ],
-    name: "setRegistry",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_renderer",
-        type: "address",
-      },
-    ],
-    name: "setRenderer",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes4",
         name: "interfaceId",
         type: "bytes4",
@@ -344,6 +398,32 @@ export const CharacterABI = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "svgStorageBase",
+    outputs: [
+      {
+        internalType: "contract SVGStorageBase",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "svgStorageEmpty",
+    outputs: [
+      {
+        internalType: "contract SVGStorageEmpty",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -475,6 +555,19 @@ export const CharacterABI = [
       },
     ],
     name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
