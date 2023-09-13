@@ -9,7 +9,11 @@ import TraitCardWrapper from "@/components/TraitCardWrapper";
 import MintTraitCard from "@/components/MintTraitCard";
 import { createPublicClient, http } from "viem";
 import { goerli, baseGoerli } from "viem/chains";
-import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
+import {
+  TRAIT_CONTRACT_ADDRESS,
+  SALT,
+  ACCOUNT_IMPLEMENTATION_CONTRACT_ADDERSS,
+} from "@/utils/constants";
 import { TraitABI } from "@/abi/trait";
 
 const baseGoerliClient = createPublicClient({
@@ -40,7 +44,13 @@ const getTbaAddress = async (tokenId: bigint) => {
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
-    args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
+    args: [
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDERSS,
+      BigInt(5),
+      CHARACTER_CONTRACT_ADDRESS,
+      tokenId,
+      SALT,
+    ],
   });
 
   return data;
