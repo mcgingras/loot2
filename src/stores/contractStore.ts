@@ -1,16 +1,14 @@
 import { create } from "zustand";
 import { createPublicClient, http } from "viem";
-import { goerli } from "viem/chains";
+import { baseGoerli } from "viem/chains";
 
 import {
   CHARACTER_CONTRACT_ADDRESS,
   TRAIT_CONTRACT_ADDRESS,
-  REGISTRY_CONTRACT_ADDRESS,
 } from "@/utils/constants";
 
 import { CharacterABI } from "@/abi/character";
 import { TraitABI } from "@/abi/trait";
-import { AccountRegistryABI } from "@/abi/accountRegistry";
 
 const argHash = (args: any[]) =>
   args
@@ -22,11 +20,9 @@ const argHash = (args: any[]) =>
     })
     .join("");
 
-const goerliClient = createPublicClient({
-  chain: goerli,
-  transport: http(
-    `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-  ),
+const baseGoerliClient = createPublicClient({
+  chain: baseGoerli,
+  transport: http(),
 });
 
 interface ContractStore {
@@ -44,7 +40,7 @@ const DEFAULT_REGISTRY = {
         return [];
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: CHARACTER_CONTRACT_ADDRESS,
         abi: CharacterABI,
         functionName: "tokensOfOwner",
@@ -63,7 +59,7 @@ const DEFAULT_REGISTRY = {
         return undefined;
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: CHARACTER_CONTRACT_ADDRESS,
         abi: CharacterABI,
         functionName: "tokenURI",
@@ -81,7 +77,7 @@ const DEFAULT_REGISTRY = {
         return [];
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: TRAIT_CONTRACT_ADDRESS,
         abi: TraitABI,
         functionName: "traitsOfOwner",
@@ -99,7 +95,7 @@ const DEFAULT_REGISTRY = {
         return undefined;
       }
 
-      const data = await goerliClient.readContract({
+      const data = await baseGoerliClient.readContract({
         address: TRAIT_CONTRACT_ADDRESS,
         abi: TraitABI,
         functionName: "getTraitDetails",

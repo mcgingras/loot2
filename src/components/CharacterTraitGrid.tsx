@@ -1,158 +1,73 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import {
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-  useAccount,
-} from "wagmi";
+import Link from "next/link";
 import {
   CHARACTER_CONTRACT_ADDRESS,
-  TRAIT_CONTRACT_ADDRESS,
   REGISTRY_CONTRACT_ADDRESS,
 } from "@/utils/constants";
-import toast from "react-hot-toast";
 
-import { TraitABI } from "@/abi/trait";
 import { AccountRegistryABI } from "@/abi/accountRegistry";
-
 import TraitCardWrapper from "@/components/TraitCardWrapper";
-import TraitRightSlider from "@/components/TraitRightSlider";
 import MintTraitCard from "@/components/MintTraitCard";
-import { useContractStore } from "@/stores/contractStore";
+import { createPublicClient, http } from "viem";
+import { baseGoerli } from "viem/chains";
+import {
+  TRAIT_CONTRACT_ADDRESS,
+  SALT,
+  ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+} from "@/utils/constants";
+import { TraitABI } from "@/abi/trait";
 
-const CharacterTraitGrid = ({ tokenId }: { tokenId: bigint }) => {
-  const { isConnected } = useAccount();
+const baseGoerliClient = createPublicClient({
+  chain: baseGoerli,
+  transport: http(`https://goerli.base.org`),
+});
 
-  const { callMethod, getDataForMethod } = useContractStore();
+const getTraitsOfOwner = async (ownerAddress: `0x${string}`) => {
+  const data = await baseGoerliClient.readContract({
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "traitsOfOwner",
+    args: [ownerAddress],
+  });
 
-  const [isSliderOpen, setIsSliderOpen] = useState<boolean>(false);
-  const [selectedTrait, setSelectedTrait] = useState<{
-    id: bigint;
-    traitType: string;
-    name: string;
-    equipped: boolean;
-  }>();
+  return data;
+};
 
-  const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
-  const [isEquipPending, setIsEquipPending] = useState<boolean>(false);
-
-  const { data: tbaAddress } = useContractRead({
-    chainId: 5,
+const getTbaAddress = async (tokenId: bigint) => {
+  const data = await baseGoerliClient.readContract({
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
-    args: [BigInt(5), CHARACTER_CONTRACT_ADDRESS, tokenId],
+    args: [
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+      BigInt(84531),
+      CHARACTER_CONTRACT_ADDRESS,
+      tokenId,
+      SALT,
+    ],
   });
 
-  const traitsOfOwnerData = getDataForMethod("traitsOfOwner", tbaAddress);
-  useEffect(() => {
-    callMethod("traitsOfOwner", tbaAddress);
-  }, [tbaAddress]);
+  return data;
+};
 
-  const { config: equipConfig, error: equipError } = usePrepareContractWrite({
-    chainId: 5,
-    address: TRAIT_CONTRACT_ADDRESS,
-    abi: TraitABI,
-    functionName: "equip",
-    enabled: !!selectedTrait,
-    args: [selectedTrait?.id || BigInt(1)],
-  });
-
-  const { data: equipData, write: equip } = useContractWrite(equipConfig);
-
-  console.log("eee", equipError);
-
-  const { config: unequipConfig } = usePrepareContractWrite({
-    chainId: 5,
-    address: TRAIT_CONTRACT_ADDRESS,
-    abi: TraitABI,
-    functionName: "unequip",
-    enabled: !!selectedTrait,
-    args: [selectedTrait?.id || BigInt(1)],
-  });
-
-  const { data: unequipData, write: unequip } = useContractWrite(unequipConfig);
-
-  const onPending = () => {
-    setIsNewTraitPending(true);
-  };
-
-  const onSuccess = () => {
-    setIsNewTraitPending(false);
-    callMethod("traitsOfOwner", tbaAddress);
-  };
-
-  useEffect(() => {
-    if (equipData?.hash || unequipData?.hash) {
-      setIsEquipPending(true);
-    }
-  }, [equipData, unequipData]);
-
-  useWaitForTransaction({
-    chainId: 5,
-    hash: selectedTrait?.equipped ? unequipData?.hash : equipData?.hash,
-    onSuccess: () => {
-      toast.success("Trait equipped");
-      setIsEquipPending(false);
-      setIsSliderOpen(false);
-      callMethod("characterTokenURI", tokenId);
-      callMethod("getTraitDetails", selectedTrait?.id);
-    },
-  });
+const CharacterTraitGrid = async ({ tokenId }: { tokenId: bigint }) => {
+  const tbaAddress = await getTbaAddress(tokenId);
+  const traitsOfOwnerData = await getTraitsOfOwner(tbaAddress);
 
   return (
-    <>
-      {selectedTrait && (
-        <TraitRightSlider
-          isSliderOpen={isSliderOpen}
-          setIsSliderOpen={setIsSliderOpen}
-          isEquipPending={isEquipPending}
-          selectedTrait={selectedTrait}
-          action={{
-            label: selectedTrait.equipped ? "Unequip" : "Equip",
-            callback: () => {
-              if (!selectedTrait.equipped && equipError?.message) {
-                toast.error("A trait with this type is already equipped.");
-                return;
-              }
-              selectedTrait.equipped ? unequip?.() : equip?.();
-            },
-          }}
-        />
-      )}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 p-4">
-        {traitsOfOwnerData?.map((traitId: bigint, idx: number) => {
-          return (
-            <TraitCardWrapper
-              traitId={traitId}
-              key={`trait=${idx}`}
-              onClick={(trait) => {
-                setIsSliderOpen(true);
-                setSelectedTrait(trait);
-              }}
-            />
-          );
-        })}
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 p-4">
+      {traitsOfOwnerData?.map((traitId: bigint, idx: number) => {
+        return (
+          <Link
+            href={`/character/${tokenId}/trait/${traitId}`}
+            key={`trait=${idx}`}
+          >
+            <TraitCardWrapper traitId={traitId} />
+          </Link>
+        );
+      })}
 
-        {isNewTraitPending && (
-          <div className="border border-white/20 p-4 aspect-square hover:border-white/50 transition-all cursor-pointer animate-pulse">
-            <div className="w-full h-full flex-row text-xs text-white flex items-center justify-center">
-              <span>Minting new trait...</span>
-            </div>
-          </div>
-        )}
-        {isConnected && (
-          <MintTraitCard
-            tokenId={tokenId}
-            onPending={onPending}
-            onSuccess={onSuccess}
-          />
-        )}
-      </div>
-    </>
+      <MintTraitCard tokenId={tokenId} />
+    </div>
   );
 };
 

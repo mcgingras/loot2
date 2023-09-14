@@ -1,19 +1,26 @@
-import { useEffect } from "react";
-import { useContractStore } from "@/stores/contractStore";
+import { createPublicClient, http } from "viem";
+import { baseGoerli } from "viem/chains";
+import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
+import { CharacterABI } from "@/abi/character";
 
-const CharacterCard = ({
-  tokenId,
-  onClick,
-}: {
-  tokenId: bigint;
-  onClick?: () => void;
-}) => {
-  const { callMethod, getDataForMethod } = useContractStore();
-  const tokenURI = getDataForMethod("characterTokenURI", tokenId);
+const baseGoerliClient = createPublicClient({
+  chain: baseGoerli,
+  transport: http(`https://goerli.base.org`),
+});
 
-  useEffect(() => {
-    callMethod("characterTokenURI", tokenId);
-  }, [tokenId, callMethod]);
+const getTokenURI = async (tokenId: bigint) => {
+  const data = await baseGoerliClient.readContract({
+    address: CHARACTER_CONTRACT_ADDRESS,
+    abi: CharacterABI,
+    functionName: "tokenURI",
+    args: [tokenId],
+  });
+
+  return data;
+};
+
+const CharacterCard = async ({ tokenId }: { tokenId: bigint }) => {
+  const tokenURI = await getTokenURI(tokenId);
 
   // TODO:
   // return empty state from contract with same format as regular non empty state so we don't have to do this jank parse
@@ -30,7 +37,6 @@ const CharacterCard = ({
       className="border border-white/20"
       src={metadata.image}
       alt="Token details."
-      onClick={onClick}
     />
   );
 };

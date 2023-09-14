@@ -1,34 +1,31 @@
-import { useEffect } from "react";
 import TraitCard from "@/components/TraitCard";
-import { useContractStore } from "@/stores/contractStore";
+import { createPublicClient, http } from "viem";
+import { baseGoerli } from "viem/chains";
+import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
+import { TraitABI } from "@/abi/trait";
 
-const TraitCardWrapper = ({
-  traitId,
-  onClick,
-}: {
-  traitId: bigint;
-  onClick?: (trait: {
-    id: bigint;
-    traitType: string;
-    name: string;
-    equipped: boolean;
-  }) => void;
-}) => {
-  const { callMethod, getDataForMethod } = useContractStore();
-  const traitDetails = getDataForMethod("getTraitDetails", traitId);
+const baseGoerliClient = createPublicClient({
+  chain: baseGoerli,
+  transport: http(`https://goerli.base.org`),
+});
 
-  useEffect(() => {
-    callMethod("getTraitDetails", traitId);
-  }, [traitId, callMethod]);
+const getTraitDetails = async (traitId: bigint) => {
+  const data = await baseGoerliClient.readContract({
+    address: TRAIT_CONTRACT_ADDRESS,
+    abi: TraitABI,
+    functionName: "getTraitDetails",
+    args: [traitId],
+  });
+
+  return data;
+};
+
+const TraitCardWrapper = async ({ traitId }: { traitId: bigint }) => {
+  const traitDetails = await getTraitDetails(traitId);
 
   return (
     <div>
-      {traitDetails && (
-        <TraitCard
-          trait={traitDetails}
-          onClick={() => onClick?.({ id: traitId, ...traitDetails })}
-        />
-      )}
+      {traitDetails && <TraitCard trait={traitDetails} />}
       <div className="flex flex-row space-x-2 items-center mt-1 ml-1">
         <span
           className={`h-2 w-2 rounded-full block ${

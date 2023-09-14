@@ -1,18 +1,7 @@
 export const AccountRegistryABI = [
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_implementation",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
     inputs: [],
-    name: "CreateError",
+    name: "InitializationFailed",
     type: "error",
   },
   {
@@ -25,15 +14,33 @@ export const AccountRegistryABI = [
         type: "address",
       },
       {
-        indexed: true,
+        indexed: false,
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
         internalType: "address",
         name: "tokenContract",
         type: "address",
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: "uint256",
         name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "salt",
         type: "uint256",
       },
     ],
@@ -44,12 +51,27 @@ export const AccountRegistryABI = [
     inputs: [
       {
         internalType: "address",
-        name: "tokenCollection",
+        name: "implementation",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "tokenContract",
         type: "address",
       },
       {
         internalType: "uint256",
         name: "tokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "salt",
         type: "uint256",
       },
     ],
@@ -67,13 +89,18 @@ export const AccountRegistryABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "chainId",
         type: "uint256",
       },
       {
         internalType: "address",
-        name: "tokenCollection",
+        name: "tokenContract",
         type: "address",
       },
       {
@@ -81,29 +108,15 @@ export const AccountRegistryABI = [
         name: "tokenId",
         type: "uint256",
       },
-    ],
-    name: "account",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "tokenCollection",
-        type: "address",
-      },
       {
         internalType: "uint256",
-        name: "tokenId",
+        name: "salt",
         type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "initData",
+        type: "bytes",
       },
     ],
     name: "createAccount",
@@ -115,48 +128,6 @@ export const AccountRegistryABI = [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "chainId",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "tokenCollection",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "createAccount",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "implementation",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
 ] as const;

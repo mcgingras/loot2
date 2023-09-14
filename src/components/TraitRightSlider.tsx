@@ -1,55 +1,136 @@
-import { Dispatch, SetStateAction } from "react";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import RightSlider from "@/components/RightSlider";
 import TraitCard from "@/components/TraitCard";
 import { Grenze_Gotisch } from "next/font/google";
-import { useAccount } from "wagmi";
+import {
+  useAccount,
+  useContractWrite,
+  usePrepareContractWrite,
+  useContractRead,
+} from "wagmi";
+import {
+  ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+  CHARACTER_CONTRACT_ADDRESS,
+  TRAIT_CONTRACT_ADDRESS,
+  REGISTRY_CONTRACT_ADDRESS,
+  SALT,
+} from "@/utils/constants";
+import { TraitABI } from "@/abi/trait";
+import { AccountABI } from "@/abi/account";
+import { AccountRegistryABI } from "@/abi/accountRegistry";
+import { encodeFunctionData } from "viem";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
 const TraitRightSlider = ({
-  isSliderOpen,
-  setIsSliderOpen,
-  isEquipPending,
-  selectedTrait,
-  action,
+  characterId,
+  traitId,
+  traitDetails,
 }: {
-  isSliderOpen: boolean;
-  setIsSliderOpen: Dispatch<SetStateAction<boolean>>;
-  isEquipPending: boolean;
-  selectedTrait: {
-    id: bigint;
-    traitType: string;
-    name: string;
-    equipped: boolean;
-  };
-  action?: {
-    label: string;
-    callback: () => void;
-  };
+  characterId: bigint;
+  traitId: bigint;
+  traitDetails: { traitType: string; name: string; equipped: boolean };
 }) => {
+  const [open, setOpen] = useState<boolean>(true);
+  const router = useRouter();
   const { isConnected } = useAccount();
+
+  const { data: tbaAddress } = useContractRead({
+    chainId: 84531,
+    address: REGISTRY_CONTRACT_ADDRESS,
+    abi: AccountRegistryABI,
+    functionName: "account",
+    args: [
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+      BigInt(84531),
+      CHARACTER_CONTRACT_ADDRESS,
+      characterId,
+      SALT,
+    ],
+  });
+
+  // need to call equip / unequip through the TBA
+  const { config: equipConfig, error } = usePrepareContractWrite({
+    chainId: 84531,
+    address: tbaAddress,
+    abi: AccountABI,
+    functionName: "execute",
+    args: [
+      TRAIT_CONTRACT_ADDRESS,
+      BigInt(0),
+      encodeFunctionData({
+        abi: TraitABI,
+        functionName: "equip",
+        args: [traitId],
+      }),
+      BigInt(0),
+    ],
+  });
+
+  const {
+    data: equipData,
+    isLoading: isEquipLoading,
+    write: equip,
+  } = useContractWrite(equipConfig);
+
+  const { config: createTBAConfig } = usePrepareContractWrite({
+    chainId: 84531,
+    address: REGISTRY_CONTRACT_ADDRESS,
+    abi: AccountRegistryABI,
+    functionName: "createAccount",
+    args: [
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+      BigInt(84531),
+      CHARACTER_CONTRACT_ADDRESS,
+      BigInt(characterId),
+      SALT,
+      "0x",
+    ],
+  });
+
+  const { data: createTBaData, write: createTBA } =
+    useContractWrite(createTBAConfig);
+
   return (
     <RightSlider
-      open={isSliderOpen}
-      setOpen={setIsSliderOpen}
+      open={open}
+      setOpen={(open: boolean) => {
+        setOpen(open);
+        setTimeout(() => {
+          router.push(`/character/${characterId}`);
+        }, 500);
+      }}
       useInnerPadding={false}
     >
       <div className="flex flex-col h-full">
         <div className="flex flex-col p-4">
           <h1 className={`${grenze.className} text-white text-4xl mb-2`}>
-            Trait #{selectedTrait.id.toString().padStart(4, "0")}
+            Trait #{traitId.toString().padStart(4, "0")}
           </h1>
           <span className="uppercase text-white/50 text-xs mb-4 block">
-            type: {selectedTrait!.traitType}
+            type: {traitDetails.traitType}
           </span>
-          <TraitCard trait={selectedTrait!} />
+          <TraitCard trait={traitDetails} />
         </div>
-        {action && isConnected && (
+        {isConnected && (
           <button
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
-            onClick={() => action.callback()}
+            onClick={() =>
+              error?.name === "ContractFunctionExecutionError"
+                ? createTBA?.()
+                : equip?.()
+            }
           >
-            <span>{isEquipPending ? "Pending..." : action.label}</span>
+            <span>
+              {error?.name === "ContractFunctionExecutionError"
+                ? "Initialize TBA"
+                : isEquipLoading
+                ? "Pending..."
+                : "Equip"}
+            </span>
           </button>
         )}
       </div>
