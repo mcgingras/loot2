@@ -9,8 +9,6 @@ import {
   useAccount,
 } from "wagmi";
 import toast from "react-hot-toast";
-import { useContractStore } from "@/stores/contractStore";
-
 import {
   CHARACTER_CONTRACT_ADDRESS,
   TRAIT_CONTRACT_ADDRESS,
@@ -24,7 +22,6 @@ import { AccountRegistryABI } from "@/abi/accountRegistry";
 
 // eventually move tokenId to url param
 const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
-  const { callMethod } = useContractStore();
   const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
   const { isConnected } = useAccount();
   const { data: tbaAddress } = useContractRead({
@@ -64,7 +61,7 @@ const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
     onSuccess: () => {
       toast.success("Trait minted");
       setIsNewTraitPending(false);
-      callMethod("traitsOfOwner", tbaAddress);
+      // refetch traits
     },
   });
 
