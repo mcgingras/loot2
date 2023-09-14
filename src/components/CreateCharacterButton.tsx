@@ -24,12 +24,14 @@ const ProfileButton = () => {
     address: CHARACTER_CONTRACT_ADDRESS,
     abi: CharacterABI,
     functionName: "mint",
+  });
+
+  const { data: mintData, write: mint } = useContractWrite({
+    ...config,
     onSuccess: (_data) => {
       setPending(true);
     },
   });
-
-  const { data: mintData, write: mint } = useContractWrite(config);
 
   // this was originally intended to mint character and create TBA
   // but I think I might just move creating TBA to trait minting so
