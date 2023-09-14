@@ -21,17 +21,6 @@ const baseGoerliClient = createPublicClient({
   transport: http(`https://goerli.base.org`),
 });
 
-const balanceOf = async (ownerAddress: `0x${string}`) => {
-  const data = await baseGoerliClient.readContract({
-    address: TRAIT_CONTRACT_ADDRESS,
-    abi: TraitABI,
-    functionName: "balanceOf",
-    args: [ownerAddress],
-  });
-
-  return data;
-};
-
 const getTraitsOfOwner = async (ownerAddress: `0x${string}`) => {
   const data = await baseGoerliClient.readContract({
     address: TRAIT_CONTRACT_ADDRESS,
@@ -62,7 +51,6 @@ const getTbaAddress = async (tokenId: bigint) => {
 
 const CharacterTraitGrid = async ({ tokenId }: { tokenId: bigint }) => {
   const tbaAddress = await getTbaAddress(tokenId);
-  const balanceOfData = await balanceOf(tbaAddress);
   const traitsOfOwnerData = await getTraitsOfOwner(tbaAddress);
 
   return (

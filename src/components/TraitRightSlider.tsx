@@ -52,10 +52,8 @@ const TraitRightSlider = ({
     ],
   });
 
-  console.log(tbaAddress);
-
   // need to call equip / unequip through the TBA
-  const { config: equipConfig } = usePrepareContractWrite({
+  const { config: equipConfig, error } = usePrepareContractWrite({
     chainId: 84531,
     address: tbaAddress,
     abi: AccountABI,
@@ -78,13 +76,31 @@ const TraitRightSlider = ({
     write: equip,
   } = useContractWrite(equipConfig);
 
+  const { config: createTBAConfig } = usePrepareContractWrite({
+    chainId: 84531,
+    address: REGISTRY_CONTRACT_ADDRESS,
+    abi: AccountRegistryABI,
+    functionName: "createAccount",
+    args: [
+      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
+      BigInt(84531),
+      CHARACTER_CONTRACT_ADDRESS,
+      BigInt(characterId),
+      SALT,
+      "0x",
+    ],
+  });
+
+  const { data: createTBaData, write: createTBA } =
+    useContractWrite(createTBAConfig);
+
   return (
     <RightSlider
       open={open}
       setOpen={(open: boolean) => {
         setOpen(open);
         setTimeout(() => {
-          router.push("/character/1");
+          router.push(`/character/${characterId}`);
         }, 500);
       }}
       useInnerPadding={false}
@@ -102,9 +118,19 @@ const TraitRightSlider = ({
         {isConnected && (
           <button
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
-            onClick={() => equip?.()}
+            onClick={() =>
+              error?.name === "ContractFunctionExecutionError"
+                ? createTBA?.()
+                : equip?.()
+            }
           >
-            <span>{isEquipLoading ? "Pending..." : "Equip"}</span>
+            <span>
+              {error?.name === "ContractFunctionExecutionError"
+                ? "Initialize TBA"
+                : isEquipLoading
+                ? "Pending..."
+                : "Equip"}
+            </span>
           </button>
         )}
       </div>
