@@ -23,6 +23,7 @@ import { AccountABI } from "@/abi/account";
 import { AccountRegistryABI } from "@/abi/accountRegistry";
 import { encodeFunctionData } from "viem";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
+import Tooltip from "@/components/Tooltip";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
@@ -71,11 +72,8 @@ const TraitRightSlider = ({
     ],
   });
 
-  const {
-    data: equipData,
-    isLoading: isEquipLoading,
-    write: equip,
-  } = useContractWrite(equipConfig);
+  const { isLoading: isEquipLoading, write: equip } =
+    useContractWrite(equipConfig);
 
   const { config: createTBAConfig } = usePrepareContractWrite({
     chainId: 84531,
@@ -92,8 +90,7 @@ const TraitRightSlider = ({
     ],
   });
 
-  const { data: createTBaData, write: createTBA } =
-    useContractWrite(createTBAConfig);
+  const { write: createTBA } = useContractWrite(createTBAConfig);
 
   return (
     <RightSlider
@@ -128,8 +125,13 @@ const TraitRightSlider = ({
             <span>
               {error?.name === "ContractFunctionExecutionError" ? (
                 <span className="flex flex-row space-x-1 items-center justify-center mx-auto">
-                  <span>Initialize TBA</span>
-                  <QuestionMarkCircleIcon className="h-4 w-4 text-black" />
+                  <span>Deploy TBA</span>
+                  <Tooltip
+                    button={
+                      <QuestionMarkCircleIcon className="h-4 w-4 text-black" />
+                    }
+                    text="Before you can equip traits, you need to activate your character by deploying a token bound account (TBA). This is a one-time action."
+                  />
                 </span>
               ) : isEquipLoading ? (
                 "Pending..."
