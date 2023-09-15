@@ -17,6 +17,7 @@ import {
 import { TraitABI } from "@/abi/trait";
 
 const baseGoerliClient = createPublicClient({
+  cacheTime: 1000,
   chain: baseGoerli,
   transport: http(`https://goerli.base.org`),
 });

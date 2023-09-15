@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   usePrepareContractWrite,
   useContractWrite,
@@ -8,6 +8,8 @@ import {
   useWaitForTransaction,
   useAccount,
 } from "wagmi";
+import { useRouter } from "next/navigation";
+
 import toast from "react-hot-toast";
 import {
   CHARACTER_CONTRACT_ADDRESS,
@@ -22,6 +24,8 @@ import { AccountRegistryABI } from "@/abi/accountRegistry";
 
 // eventually move tokenId to url param
 const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
   const { isConnected } = useAccount();
   const { data: tbaAddress } = useContractRead({
@@ -61,7 +65,11 @@ const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
     onSuccess: () => {
       toast.success("Trait minted");
       setIsNewTraitPending(false);
-      // refetch traits
+      startTransition(() => {
+        // Refresh the current route and fetch new data from the server without
+        // losing client-side browser or React state.
+        router.refresh();
+      });
     },
   });
 
