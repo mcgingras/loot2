@@ -1,19 +1,13 @@
-import { createPublicClient, http } from "viem";
-import { baseGoerli } from "viem/chains";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
 import { CharacterABI } from "@/abi/character";
 import Link from "next/link";
 import CharacterCard from "@/components/CharacterCard";
+import { activeClient } from "../lib/viem/";
 import { Grenze_Gotisch } from "next/font/google";
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
-const baseGoerliClient = createPublicClient({
-  chain: baseGoerli,
-  transport: http(`https://goerli.base.org`),
-});
-
 const totalSupply = async () => {
-  const data = await baseGoerliClient.readContract({
+  const data = await activeClient.readContract({
     address: CHARACTER_CONTRACT_ADDRESS,
     abi: CharacterABI,
     functionName: "totalSupply",

@@ -22,6 +22,7 @@ import { TraitABI } from "@/abi/trait";
 import { AccountABI } from "@/abi/account";
 import { AccountRegistryABI } from "@/abi/accountRegistry";
 import { encodeFunctionData } from "viem";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
@@ -125,11 +126,16 @@ const TraitRightSlider = ({
             }
           >
             <span>
-              {error?.name === "ContractFunctionExecutionError"
-                ? "Initialize TBA"
-                : isEquipLoading
-                ? "Pending..."
-                : "Equip"}
+              {error?.name === "ContractFunctionExecutionError" ? (
+                <span className="flex flex-row space-x-1 items-center justify-center mx-auto">
+                  <span>Initialize TBA</span>
+                  <QuestionMarkCircleIcon className="h-4 w-4 text-black" />
+                </span>
+              ) : isEquipLoading ? (
+                "Pending..."
+              ) : (
+                "Equip"
+              )}
             </span>
           </button>
         )}

@@ -1,17 +1,11 @@
 // https://twitter.com/diegohaz/status/1688191712957460481?s=20
 import TraitRightSlider from "@/components/TraitRightSlider";
-import { createPublicClient, http } from "viem";
-import { baseGoerli } from "viem/chains";
 import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
 import { TraitABI } from "@/abi/trait";
+import { activeClient } from "@/lib/viem";
 
 const getTraitDetails = async (traitId: bigint) => {
-  const baseGoerliClient = createPublicClient({
-    chain: baseGoerli,
-    transport: http(`https://goerli.base.org`),
-  });
-
-  const data = await baseGoerliClient.readContract({
+  const data = await activeClient.readContract({
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
     functionName: "getTraitDetails",

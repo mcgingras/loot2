@@ -1,15 +1,9 @@
-import { createPublicClient, http } from "viem";
-import { baseGoerli } from "viem/chains";
 import { CHARACTER_CONTRACT_ADDRESS } from "@/utils/constants";
 import { CharacterABI } from "@/abi/character";
-
-const baseGoerliClient = createPublicClient({
-  chain: baseGoerli,
-  transport: http(`https://goerli.base.org`),
-});
+import { activeClient } from "@/lib/viem";
 
 const getTokenURI = async (tokenId: bigint) => {
-  const data = await baseGoerliClient.readContract({
+  const data = await activeClient.readContract({
     address: CHARACTER_CONTRACT_ADDRESS,
     abi: CharacterABI,
     functionName: "tokenURI",
