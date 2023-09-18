@@ -52,8 +52,7 @@ const TraitRightSlider = ({
     ],
   });
 
-  // need to call equip / unequip through the TBA
-  const { config: equipConfig, error } = usePrepareContractWrite({
+  const { config: equipConfig } = usePrepareContractWrite({
     chainId: 84531,
     address: tbaAddress,
     abi: AccountABI,
@@ -70,8 +69,36 @@ const TraitRightSlider = ({
     ],
   });
 
+  const { config: unequipConfig } = usePrepareContractWrite({
+    chainId: 84531,
+    address: tbaAddress,
+    abi: AccountABI,
+    functionName: "execute",
+    args: [
+      TRAIT_CONTRACT_ADDRESS,
+      BigInt(0),
+      encodeFunctionData({
+        abi: TraitABI,
+        functionName: "unequip",
+        args: [traitId],
+      }),
+      BigInt(0),
+    ],
+  });
+
   const { isLoading: isEquipLoading, write: equip } =
     useContractWrite(equipConfig);
+
+  const { isLoading: isUnequipLoading, write: unequip } =
+    useContractWrite(unequipConfig);
+
+  const toggleEquip = async () => {
+    if (traitDetails.equipped) {
+      await unequip?.();
+    } else {
+      await equip?.();
+    }
+  };
 
   return (
     <RightSlider
@@ -97,9 +124,15 @@ const TraitRightSlider = ({
         {isConnected && (
           <button
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
-            onClick={() => equip?.()}
+            onClick={() => toggleEquip()}
           >
-            <span>{isEquipLoading ? "Pending..." : "Equip"}</span>
+            <span>
+              {isEquipLoading || isUnequipLoading
+                ? "Pending..."
+                : traitDetails.equipped
+                ? "Unequip"
+                : "Equip"}
+            </span>
           </button>
         )}
       </div>

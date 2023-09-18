@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import {
   ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
   CHARACTER_CONTRACT_ADDRESS,
@@ -17,14 +17,11 @@ import {
   useContractRead,
   useWaitForTransaction,
 } from "wagmi";
-import { useRouter } from "next/navigation";
 import { encodeFunctionData } from "viem";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import Tooltip from "@/components/Tooltip";
 
 const DeployTBAButtonClient = ({ tokenId }: { tokenId: bigint }) => {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [pending, setPending] = useState<boolean>(false);
   const { data: tbaAddress } = useContractRead({
     chainId: 84531,
@@ -86,11 +83,7 @@ const DeployTBAButtonClient = ({ tokenId }: { tokenId: bigint }) => {
     hash: data?.hash,
     onSuccess: (_data) => {
       setPending(false);
-      startTransition(() => {
-        // Refresh the current route and fetch new data from the server without
-        // losing client-side browser or React state.
-        refetch();
-      });
+      refetch();
     },
   });
 
