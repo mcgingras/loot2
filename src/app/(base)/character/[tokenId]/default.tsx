@@ -1,3 +1,4 @@
+import TBATraitWrapper from "@/components/TBATraitWrapper";
 import CharacterTraitGrid from "@/components/CharacterTraitGrid";
 
 const Default = ({ params }: { params: { tokenId: bigint } }) => {
@@ -10,7 +11,10 @@ const Default = ({ params }: { params: { tokenId: bigint } }) => {
           {params.tokenId.toString().padStart(4, "0")}.
         </p>
       </div>
-      <CharacterTraitGrid tokenId={BigInt(params.tokenId)} />
+      <div></div>
+      <TBATraitWrapper tokenId={params.tokenId}>
+        <CharacterTraitGrid tokenId={params.tokenId} />
+      </TBATraitWrapper>
     </>
   );
 };

@@ -1,6 +1,7 @@
 import { Grenze_Gotisch } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import CharacterCard from "@/components/CharacterCard";
+import DeployTBAButtonClient from "@/components/DeployTBAButtonClient";
 
 const grenze = Grenze_Gotisch({
   subsets: ["latin"],
@@ -21,14 +22,12 @@ export default function Layout({
       <div className="col-span-1 border-r border-white/20 h-full flex flex-col overflow-y-scroll">
         <div className="p-4 border-b border-white/20 w-full">
           <h1 className={`${grenze.className} text-white font-bold text-8xl`}>
-            {params.tokenId.toString().padStart(4, "0")}
+            #{params.tokenId.toString().padStart(4, "0")}
           </h1>
-          {/* <p className="text-white/50 text-sm uppercase mt-1">
-            Token bound upgrade to the original loot project.
-          </p> */}
         </div>
         <div className="p-4 overflow-y-scroll grow">
           <CharacterCard tokenId={BigInt(params.tokenId as string)} />
+          <DeployTBAButtonClient tokenId={BigInt(params.tokenId as string)} />
         </div>
       </div>
       <div className="col-span-1 sm:col-span-2 overflow-y-scroll z-0">

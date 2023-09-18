@@ -22,8 +22,6 @@ import { TraitABI } from "@/abi/trait";
 import { AccountABI } from "@/abi/account";
 import { AccountRegistryABI } from "@/abi/accountRegistry";
 import { encodeFunctionData } from "viem";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
-import Tooltip from "@/components/Tooltip";
 
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
@@ -75,23 +73,6 @@ const TraitRightSlider = ({
   const { isLoading: isEquipLoading, write: equip } =
     useContractWrite(equipConfig);
 
-  const { config: createTBAConfig } = usePrepareContractWrite({
-    chainId: 84531,
-    address: REGISTRY_CONTRACT_ADDRESS,
-    abi: AccountRegistryABI,
-    functionName: "createAccount",
-    args: [
-      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
-      CHARACTER_CONTRACT_ADDRESS,
-      BigInt(characterId),
-      SALT,
-      "0x",
-    ],
-  });
-
-  const { write: createTBA } = useContractWrite(createTBAConfig);
-
   return (
     <RightSlider
       open={open}
@@ -116,29 +97,9 @@ const TraitRightSlider = ({
         {isConnected && (
           <button
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
-            onClick={() =>
-              error?.name === "ContractFunctionExecutionError"
-                ? createTBA?.()
-                : equip?.()
-            }
+            onClick={() => equip?.()}
           >
-            <span>
-              {error?.name === "ContractFunctionExecutionError" ? (
-                <span className="flex flex-row space-x-1 items-center justify-center mx-auto">
-                  <span>Deploy TBA</span>
-                  <Tooltip
-                    button={
-                      <QuestionMarkCircleIcon className="h-4 w-4 text-black" />
-                    }
-                    text="Before you can equip traits, you need to activate your character by deploying a token bound account (TBA). This is a one-time action."
-                  />
-                </span>
-              ) : isEquipLoading ? (
-                "Pending..."
-              ) : (
-                "Equip"
-              )}
-            </span>
+            <span>{isEquipLoading ? "Pending..." : "Equip"}</span>
           </button>
         )}
       </div>
