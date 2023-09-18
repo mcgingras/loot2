@@ -11,7 +11,7 @@ export default function Profile() {
             onClick={show}
             className="bg-white text-xs border border-white/30 rounded px-2 py-1"
           >
-            {isConnected ? address : "Custom Connect"}
+            {isConnected ? address : "Connect wallet"}
           </button>
         );
       }}

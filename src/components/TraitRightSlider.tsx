@@ -70,29 +70,8 @@ const TraitRightSlider = ({
     ],
   });
 
-  const {
-    data: equipData,
-    isLoading: isEquipLoading,
-    write: equip,
-  } = useContractWrite(equipConfig);
-
-  const { config: createTBAConfig } = usePrepareContractWrite({
-    chainId: 84531,
-    address: REGISTRY_CONTRACT_ADDRESS,
-    abi: AccountRegistryABI,
-    functionName: "createAccount",
-    args: [
-      ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
-      CHARACTER_CONTRACT_ADDRESS,
-      BigInt(characterId),
-      SALT,
-      "0x",
-    ],
-  });
-
-  const { data: createTBaData, write: createTBA } =
-    useContractWrite(createTBAConfig);
+  const { isLoading: isEquipLoading, write: equip } =
+    useContractWrite(equipConfig);
 
   return (
     <RightSlider
@@ -118,19 +97,9 @@ const TraitRightSlider = ({
         {isConnected && (
           <button
             className="w-full border-t bg-white uppercase fixed bottom-0 py-4"
-            onClick={() =>
-              error?.name === "ContractFunctionExecutionError"
-                ? createTBA?.()
-                : equip?.()
-            }
+            onClick={() => equip?.()}
           >
-            <span>
-              {error?.name === "ContractFunctionExecutionError"
-                ? "Initialize TBA"
-                : isEquipLoading
-                ? "Pending..."
-                : "Equip"}
-            </span>
+            <span>{isEquipLoading ? "Pending..." : "Equip"}</span>
           </button>
         )}
       </div>

@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import { createPublicClient, http } from "viem";
-import { baseGoerli } from "viem/chains";
+import { activeClient } from "@/lib/viem";
 
 import {
   CHARACTER_CONTRACT_ADDRESS,
@@ -20,11 +19,6 @@ const argHash = (args: any[]) =>
     })
     .join("");
 
-const baseGoerliClient = createPublicClient({
-  chain: baseGoerli,
-  transport: http(),
-});
-
 interface ContractStore {
   registry: any;
   callMethod: (method: string, ...args: any[]) => void;
@@ -40,7 +34,7 @@ const DEFAULT_REGISTRY = {
         return [];
       }
 
-      const data = await baseGoerliClient.readContract({
+      const data = await activeClient.readContract({
         address: CHARACTER_CONTRACT_ADDRESS,
         abi: CharacterABI,
         functionName: "tokensOfOwner",
@@ -59,7 +53,7 @@ const DEFAULT_REGISTRY = {
         return undefined;
       }
 
-      const data = await baseGoerliClient.readContract({
+      const data = await activeClient.readContract({
         address: CHARACTER_CONTRACT_ADDRESS,
         abi: CharacterABI,
         functionName: "tokenURI",
@@ -77,7 +71,7 @@ const DEFAULT_REGISTRY = {
         return [];
       }
 
-      const data = await baseGoerliClient.readContract({
+      const data = await activeClient.readContract({
         address: TRAIT_CONTRACT_ADDRESS,
         abi: TraitABI,
         functionName: "traitsOfOwner",
@@ -95,7 +89,7 @@ const DEFAULT_REGISTRY = {
         return undefined;
       }
 
-      const data = await baseGoerliClient.readContract({
+      const data = await activeClient.readContract({
         address: TRAIT_CONTRACT_ADDRESS,
         abi: TraitABI,
         functionName: "getTraitDetails",

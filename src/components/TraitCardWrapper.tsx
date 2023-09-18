@@ -1,16 +1,10 @@
 import TraitCard from "@/components/TraitCard";
-import { createPublicClient, http } from "viem";
-import { baseGoerli } from "viem/chains";
 import { TRAIT_CONTRACT_ADDRESS } from "@/utils/constants";
 import { TraitABI } from "@/abi/trait";
-
-const baseGoerliClient = createPublicClient({
-  chain: baseGoerli,
-  transport: http(`https://goerli.base.org`),
-});
+import { activeClient } from "@/lib/viem";
 
 const getTraitDetails = async (traitId: bigint) => {
-  const data = await baseGoerliClient.readContract({
+  const data = await activeClient.readContract({
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
     functionName: "getTraitDetails",

@@ -3,27 +3,19 @@ import {
   CHARACTER_CONTRACT_ADDRESS,
   REGISTRY_CONTRACT_ADDRESS,
 } from "@/utils/constants";
-
 import { AccountRegistryABI } from "@/abi/accountRegistry";
 import TraitCardWrapper from "@/components/TraitCardWrapper";
 import MintTraitCard from "@/components/MintTraitCard";
-import { createPublicClient, http } from "viem";
-import { baseGoerli } from "viem/chains";
 import {
   TRAIT_CONTRACT_ADDRESS,
   SALT,
   ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
 } from "@/utils/constants";
+import { activeClient } from "@/lib/viem";
 import { TraitABI } from "@/abi/trait";
 
-const baseGoerliClient = createPublicClient({
-  cacheTime: 1000,
-  chain: baseGoerli,
-  transport: http(`https://goerli.base.org`),
-});
-
 const getTraitsOfOwner = async (ownerAddress: `0x${string}`) => {
-  const data = await baseGoerliClient.readContract({
+  const data = await activeClient.readContract({
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
     functionName: "traitsOfOwner",
@@ -34,7 +26,7 @@ const getTraitsOfOwner = async (ownerAddress: `0x${string}`) => {
 };
 
 const getTbaAddress = async (tokenId: bigint) => {
-  const data = await baseGoerliClient.readContract({
+  const data = await activeClient.readContract({
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
