@@ -10,6 +10,7 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useContractRead,
+  useWaitForTransaction,
 } from "wagmi";
 import {
   ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
@@ -35,6 +36,7 @@ const TraitRightSlider = ({
   traitDetails: { traitType: string; name: string; equipped: boolean };
 }) => {
   const [open, setOpen] = useState<boolean>(true);
+  const [pending, setPending] = useState<boolean>(false);
   const router = useRouter();
   const { isConnected } = useAccount();
 
@@ -86,11 +88,27 @@ const TraitRightSlider = ({
     ],
   });
 
-  const { isLoading: isEquipLoading, write: equip } =
-    useContractWrite(equipConfig);
+  const {
+    data: equipData,
+    isLoading: isEquipLoading,
+    write: equip,
+  } = useContractWrite({
+    ...equipConfig,
+    onSuccess: () => {
+      setPending(true);
+    },
+  });
 
-  const { isLoading: isUnequipLoading, write: unequip } =
-    useContractWrite(unequipConfig);
+  const {
+    data: unequipData,
+    isLoading: isUnequipLoading,
+    write: unequip,
+  } = useContractWrite({
+    ...unequipConfig,
+    onSuccess: () => {
+      setPending(true);
+    },
+  });
 
   const toggleEquip = async () => {
     if (traitDetails.equipped) {
@@ -99,6 +117,18 @@ const TraitRightSlider = ({
       await equip?.();
     }
   };
+
+  useWaitForTransaction({
+    chainId: 84531,
+    hash: traitDetails.equipped ? unequipData?.hash : equipData?.hash,
+    onSuccess: () => {
+      setPending(false);
+      setOpen(false);
+      setTimeout(() => {
+        router.push(`/character/${characterId}`);
+      }, 500);
+    },
+  });
 
   return (
     <RightSlider
@@ -127,7 +157,7 @@ const TraitRightSlider = ({
             onClick={() => toggleEquip()}
           >
             <span>
-              {isEquipLoading || isUnequipLoading
+              {pending
                 ? "Pending..."
                 : traitDetails.equipped
                 ? "Unequip"
