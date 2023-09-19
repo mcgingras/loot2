@@ -32,7 +32,7 @@ const getTbaAddress = async (tokenId: bigint) => {
     functionName: "account",
     args: [
       ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
+      BigInt(8453),
       CHARACTER_CONTRACT_ADDRESS,
       tokenId,
       SALT,

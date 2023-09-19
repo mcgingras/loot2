@@ -24,13 +24,13 @@ import Tooltip from "@/components/Tooltip";
 const DeployTBAButtonClient = ({ tokenId }: { tokenId: bigint }) => {
   const [pending, setPending] = useState<boolean>(false);
   const { data: tbaAddress } = useContractRead({
-    chainId: 84531,
+    chainId: 8453,
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
     args: [
       ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
+      BigInt(8453),
       CHARACTER_CONTRACT_ADDRESS,
       tokenId,
       SALT,
@@ -40,7 +40,7 @@ const DeployTBAButtonClient = ({ tokenId }: { tokenId: bigint }) => {
   // This prepare call doesn't even matter -- we are just trying to call it to see if it fails
   // If it fails we know we need to deploy a TBA
   const { error, refetch } = usePrepareContractWrite({
-    chainId: 84531,
+    chainId: 8453,
     address: tbaAddress,
     abi: AccountABI,
     functionName: "execute",
@@ -57,13 +57,13 @@ const DeployTBAButtonClient = ({ tokenId }: { tokenId: bigint }) => {
   });
 
   const { config: createTBAConfig } = usePrepareContractWrite({
-    chainId: 84531,
+    chainId: 8453,
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "createAccount",
     args: [
       ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
+      BigInt(8453),
       CHARACTER_CONTRACT_ADDRESS,
       tokenId,
       SALT,
@@ -79,7 +79,7 @@ const DeployTBAButtonClient = ({ tokenId }: { tokenId: bigint }) => {
   });
 
   useWaitForTransaction({
-    chainId: 84531,
+    chainId: 8453,
     hash: data?.hash,
     onSuccess: (_data) => {
       setPending(false);

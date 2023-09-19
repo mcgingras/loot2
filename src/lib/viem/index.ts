@@ -1,5 +1,5 @@
 import { createPublicClient, http } from "viem";
-import { baseGoerli } from "viem/chains";
+import { baseGoerli, base } from "viem/chains";
 
 const baseGoerliClient = createPublicClient({
   cacheTime: 0,
@@ -11,4 +11,14 @@ const baseGoerliClient = createPublicClient({
   }),
 });
 
-export const activeClient = baseGoerliClient;
+const baseClient = createPublicClient({
+  cacheTime: 0,
+  chain: base,
+  transport: http(`https://base.org`, {
+    fetchOptions: {
+      cache: "no-store",
+    },
+  }),
+});
+
+export const activeClient = baseClient;

@@ -1,7 +1,7 @@
 "use client";
 
 import { createConfig, WagmiConfig } from "wagmi";
-import { baseGoerli } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
 const config = createConfig(
@@ -11,7 +11,7 @@ const config = createConfig(
       .NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string,
     appName: "Loot2",
     appDescription: "Tokenbound upgrade to the original loot project",
-    chains: [baseGoerli],
+    chains: [base],
   })
 );
 

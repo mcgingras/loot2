@@ -29,13 +29,13 @@ const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
   const [isNewTraitPending, setIsNewTraitPending] = useState<boolean>(false);
   const { isConnected } = useAccount();
   const { data: tbaAddress } = useContractRead({
-    chainId: 84531,
+    chainId: 8453,
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
     args: [
       ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
+      BigInt(8453),
       CHARACTER_CONTRACT_ADDRESS,
       tokenId,
       SALT,
@@ -43,7 +43,7 @@ const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
   });
 
   const { config } = usePrepareContractWrite({
-    chainId: 84531,
+    chainId: 8453,
     address: TRAIT_CONTRACT_ADDRESS,
     abi: TraitABI,
     enabled: !!tbaAddress,
@@ -60,7 +60,7 @@ const MintTraitCard = ({ tokenId }: { tokenId: bigint }) => {
   }, [mintData]);
 
   useWaitForTransaction({
-    chainId: 84531,
+    chainId: 8453,
     hash: mintData?.hash,
     onSuccess: () => {
       toast.success("Trait minted");

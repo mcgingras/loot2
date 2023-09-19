@@ -20,7 +20,7 @@ const ProfileButton = () => {
   const { switchNetwork } = useSwitchNetwork();
 
   const { config } = usePrepareContractWrite({
-    chainId: 84531,
+    chainId: 8453,
     address: CHARACTER_CONTRACT_ADDRESS,
     abi: CharacterABI,
     functionName: "mint",
@@ -41,7 +41,7 @@ const ProfileButton = () => {
   };
 
   useWaitForTransaction({
-    chainId: 84531,
+    chainId: 8453,
     hash: mintData?.hash,
     onSuccess: (data) => {
       setPending(false);
@@ -54,8 +54,8 @@ const ProfileButton = () => {
     <button
       className="text-white text-xs border border-white/30 rounded px-2 py-1"
       onClick={() => {
-        if (chain?.id !== 84531) {
-          switchNetwork?.(84531);
+        if (chain?.id !== 8453) {
+          switchNetwork?.(8453);
         }
         mintCharacter();
       }}

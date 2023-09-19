@@ -21,13 +21,13 @@ const TBATraitWrapper = ({
   tokenId: bigint;
 }) => {
   const { data: tbaAddress } = useContractRead({
-    chainId: 84531,
+    chainId: 8453,
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
     args: [
       ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
+      BigInt(8453),
       CHARACTER_CONTRACT_ADDRESS,
       tokenId,
       SALT,
@@ -37,7 +37,7 @@ const TBATraitWrapper = ({
   // This prepare call doesn't even matter -- we are just trying to call it to see if it fails
   // If it fails we know we need to deploy a TBA
   const { error } = usePrepareContractWrite({
-    chainId: 84531,
+    chainId: 8453,
     address: tbaAddress,
     abi: AccountABI,
     functionName: "execute",

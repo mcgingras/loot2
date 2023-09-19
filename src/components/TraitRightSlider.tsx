@@ -41,13 +41,13 @@ const TraitRightSlider = ({
   const { isConnected } = useAccount();
 
   const { data: tbaAddress } = useContractRead({
-    chainId: 84531,
+    chainId: 8453,
     address: REGISTRY_CONTRACT_ADDRESS,
     abi: AccountRegistryABI,
     functionName: "account",
     args: [
       ACCOUNT_IMPLEMENTATION_CONTRACT_ADDRESS,
-      BigInt(84531),
+      BigInt(8453),
       CHARACTER_CONTRACT_ADDRESS,
       characterId,
       SALT,
@@ -55,7 +55,7 @@ const TraitRightSlider = ({
   });
 
   const { config: equipConfig } = usePrepareContractWrite({
-    chainId: 84531,
+    chainId: 8453,
     address: tbaAddress,
     abi: AccountABI,
     functionName: "execute",
@@ -72,7 +72,7 @@ const TraitRightSlider = ({
   });
 
   const { config: unequipConfig } = usePrepareContractWrite({
-    chainId: 84531,
+    chainId: 8453,
     address: tbaAddress,
     abi: AccountABI,
     functionName: "execute",
@@ -88,22 +88,14 @@ const TraitRightSlider = ({
     ],
   });
 
-  const {
-    data: equipData,
-    isLoading: isEquipLoading,
-    write: equip,
-  } = useContractWrite({
+  const { data: equipData, write: equip } = useContractWrite({
     ...equipConfig,
     onSuccess: () => {
       setPending(true);
     },
   });
 
-  const {
-    data: unequipData,
-    isLoading: isUnequipLoading,
-    write: unequip,
-  } = useContractWrite({
+  const { data: unequipData, write: unequip } = useContractWrite({
     ...unequipConfig,
     onSuccess: () => {
       setPending(true);
@@ -119,7 +111,7 @@ const TraitRightSlider = ({
   };
 
   useWaitForTransaction({
-    chainId: 84531,
+    chainId: 8453,
     hash: traitDetails.equipped ? unequipData?.hash : equipData?.hash,
     onSuccess: async () => {
       setPending(false);
