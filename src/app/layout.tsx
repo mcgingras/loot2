@@ -48,7 +48,7 @@ export default function RootLayout({
             <footer className="border-t border-white/20 px-4 py-2 flex flex-row space-x-12 text-white text-xs bg-black z-50">
               <a href="https://station.express/">Station Labs</a>
               <a href="https://github.com/mcgingras/loot2">Github</a>
-              <a href="https://testnets.opensea.io/collection/loot2-tokenbound-character-6">
+              <a href="https://opensea.io/collection/loot2-tokenbound-character">
                 Collection
               </a>
             </footer>
