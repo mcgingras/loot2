@@ -8,14 +8,19 @@ import { Grenze_Gotisch } from "next/font/google";
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
 const getCharactersOfOwner = async (ownerAddress: `0x${string}`) => {
-  const data = await activeClient.readContract({
-    address: CHARACTER_CONTRACT_ADDRESS,
-    abi: CharacterABI,
-    functionName: "tokensOfOwner",
-    args: [ownerAddress],
-  });
+  try {
+    const data = await activeClient.readContract({
+      address: CHARACTER_CONTRACT_ADDRESS,
+      abi: CharacterABI,
+      functionName: "tokensOfOwner",
+      args: [ownerAddress],
+    });
 
-  return data;
+    return data;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
 };
 
 export default async function Profile({ params }: { params: any }) {

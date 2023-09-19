@@ -7,13 +7,17 @@ import { Grenze_Gotisch } from "next/font/google";
 const grenze = Grenze_Gotisch({ subsets: ["latin"], weight: ["400"] });
 
 const totalSupply = async () => {
-  const data = await activeClient.readContract({
-    address: CHARACTER_CONTRACT_ADDRESS,
-    abi: CharacterABI,
-    functionName: "totalSupply",
-  });
-
-  return data;
+  try {
+    const data = await activeClient.readContract({
+      address: CHARACTER_CONTRACT_ADDRESS,
+      abi: CharacterABI,
+      functionName: "totalSupply",
+    });
+    return data;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
 };
 
 export default async function Home() {
