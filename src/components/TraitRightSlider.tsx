@@ -121,11 +121,12 @@ const TraitRightSlider = ({
   useWaitForTransaction({
     chainId: 84531,
     hash: traitDetails.equipped ? unequipData?.hash : equipData?.hash,
-    onSuccess: () => {
+    onSuccess: async () => {
       setPending(false);
       setOpen(false);
       setTimeout(() => {
         router.push(`/character/${characterId}`);
+        router.refresh();
       }, 500);
     },
   });
