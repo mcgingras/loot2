@@ -13,11 +13,7 @@ const baseGoerliClient = createPublicClient({
 
 const baseClient = createPublicClient({
   chain: base,
-  transport: http(`https://mainnet.base.org`, {
-    fetchOptions: {
-      cache: "no-store",
-    },
-  }),
+  transport: http(`https://mainnet.base.org`, {}),
 });
 
 export const activeClient = baseClient;
