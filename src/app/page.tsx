@@ -32,21 +32,29 @@ export default async function Home() {
           Tokenbound upgrade to the original loot project
         </p>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-6 gap-x-4 gap-y-8 p-4 overflow-y-scroll grow">
-        {Array.from({ length: Number(total) }, (_, i) => i + 1).map(
-          (tokenId, idx) => {
-            return (
-              <div className="mb-8" key={`char-${idx}`}>
-                <Link href={`/character/${tokenId}`} className="cursor-pointer">
-                  <CharacterCard tokenId={BigInt(tokenId)} />
-                </Link>
-                <span className="text-xs text-white ml-1">
-                  Character #{tokenId.toString().padStart(4, "0")}
-                </span>
-              </div>
-            );
-          }
-        )}
+      <div className="overflow-y-scroll grow">
+        <h1 className="text-white mx-4 mt-2 text-xs uppercase">
+          The Twelve Chosen
+        </h1>
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-x-4 gap-y-8 p-4 ">
+          {Array.from({ length: Number(12) }, (_, i) => i + 1).map(
+            (tokenId, idx) => {
+              return (
+                <div className="mb-8" key={`char-${idx}`}>
+                  <Link
+                    href={`/character/${tokenId}`}
+                    className="cursor-pointer"
+                  >
+                    <CharacterCard tokenId={BigInt(tokenId)} />
+                  </Link>
+                  <span className="text-xs text-white ml-1">
+                    Character #{tokenId.toString().padStart(4, "0")}
+                  </span>
+                </div>
+              );
+            }
+          )}
+        </div>
       </div>
     </section>
   );
